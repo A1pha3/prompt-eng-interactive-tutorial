@@ -34,7 +34,7 @@
   - _需求：1.3_
 
 - [-] 3. 编写使用文档
-- [ ] 3.1 编写完整使用手册
+- [x] 3.1 编写完整使用手册
   - 创建 `docs/zh/user-guide/user-guide.md`
   - 涵盖所有 9 个章节的详细说明
   - 包含每个章节的学习目标和关键概念
@@ -63,29 +63,29 @@
   - _需求：2.4_
 
 
-- [ ] 4. 编写开发文档
-- [ ] 4.1 编写架构设计文档
+- [-] 4. 编写开发文档
+- [x] 4.1 编写架构设计文档
   - 创建 `docs/zh/development/architecture.md`
   - 说明项目的整体架构和设计模式
   - 包含架构图（使用 Mermaid）
   - 说明各个组件的职责和交互
   - _需求：3.1_
 
-- [ ] 4.2 编写开发指南文档
+- [x] 4.2 编写开发指南文档
   - 创建 `docs/zh/development/development-guide.md`
   - 提供开发环境搭建的详细步骤
   - 说明如何运行和调试项目
   - 包含开发工具推荐
   - _需求：3.2_
 
-- [ ] 4.3 编写贡献指南文档
+- [x] 4.3 编写贡献指南文档
   - 创建 `docs/zh/development/contributing.md`
   - 翻译并扩展现有的 CONTRIBUTING.md
   - 说明代码提交流程和规范
   - 包含 Pull Request 模板和检查清单
   - _需求：3.3_
 
-- [ ] 4.4 编写代码规范文档
+- [x] 4.4 编写代码规范文档
   - 创建 `docs/zh/development/code-style.md`
   - 定义 Python 代码风格规范
   - 定义 Notebook 编写规范

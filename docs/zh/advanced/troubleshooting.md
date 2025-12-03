@@ -456,3 +456,727 @@ response_text = response.content[0].text
 data = extract_json(response_text)
 ```
 
+### 问题 8：Claude 不遵循指令
+
+**症状**：
+- 输出与要求不符
+- 忽略某些约束
+- 添加不必要的内容
+
+**解决方案**：
+
+**方案 1：使用更清晰的指令**
+```python
+# ❌ 模糊
+PROMPT = "分析这个文本"
+
+# ✅ 清晰
+PROMPT = """
+分析以下文本，只提供以下信息：
+1. 主题（一句话）
+2. 情感（正面/负面/中性）
+3. 关键词（3-5个）
+
+不要包含其他内容。
+
+<text>
+{text}
+</text>
+"""
+```
+
+**方案 2：使用系统提示强化**
+```python
+SYSTEM_PROMPT = """
+你必须严格遵循用户的指令。
+- 只输出要求的内容
+- 不要添加解释或前言
+- 严格按照指定格式输出
+"""
+```
+
+**方案 3：使用预填充**
+```python
+messages = [
+    {"role": "user", "content": "列出三种水果，不要其他内容"},
+    {"role": "assistant", "content": "1."}  # 引导直接输出
+]
+```
+
+### 问题 9：输出包含幻觉
+
+**症状**：
+- 编造不存在的事实
+- 虚构引用或数据
+- 对不确定的信息表现得很确定
+
+**解决方案**：
+
+**方案 1：提供完整上下文**
+```python
+# ❌ 依赖模型记忆
+PROMPT = "总结《XYZ报告》的主要发现"
+
+# ✅ 提供实际内容
+PROMPT = """
+总结以下报告的主要发现：
+
+<report>
+[报告全文]
+</report>
+
+只基于上述内容进行总结，不要添加报告中没有的信息。
+"""
+```
+
+**方案 2：要求引用来源**
+```python
+PROMPT = """
+回答问题并引用文档中的具体内容：
+
+<document>
+{document}
+</document>
+
+问题：{question}
+
+要求：
+- 直接引用文档中的相关句子
+- 使用引号标注引用
+- 如果文档中没有相关信息，明确说明"文档中未提及"
+"""
+```
+
+**方案 3：要求承认不确定性**
+```python
+SYSTEM_PROMPT = """
+在回答时：
+- 如果不确定，明确说"我不确定"
+- 区分事实和推测
+- 不要编造信息
+- 承认知识的局限性
+"""
+```
+
+---
+
+## 性能问题
+
+### 问题 10：响应时间过长
+
+**症状**：
+- 请求需要很长时间才能完成
+- 超过预期的响应时间
+
+**诊断步骤**：
+
+**步骤 1：测量各部分时间**
+```python
+import time
+
+start_time = time.time()
+
+# 网络时间
+request_start = time.time()
+response = client.messages.create(...)
+request_end = time.time()
+
+# 处理时间
+process_start = time.time()
+result = process_response(response)
+process_end = time.time()
+
+print(f"网络时间: {request_end - request_start:.2f}s")
+print(f"处理时间: {process_end - process_start:.2f}s")
+print(f"总时间: {time.time() - start_time:.2f}s")
+```
+
+**解决方案**：
+
+**方案 1：优化提示长度**
+```python
+# 减少输入 tokens
+prompt = optimize_prompt(original_prompt)
+```
+
+**方案 2：使用更快的模型**
+```python
+# Haiku 比 Opus 快得多
+model = "claude-3-haiku-20240307"  # 而不是 opus
+```
+
+**方案 3：使用流式输出**
+```python
+# 获得更快的首字节时间
+with client.messages.stream(...) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+```
+
+**方案 4：并行处理**
+```python
+# 对于多个独立请求，并行处理
+import asyncio
+
+async def process_batch(items):
+    tasks = [process_item(item) for item in items]
+    return await asyncio.gather(*tasks)
+```
+
+### 问题 11：Token 使用超出预期
+
+**症状**：
+- API 费用高于预期
+- Token 计数与预期不符
+
+**诊断**：
+
+```python
+response = client.messages.create(...)
+
+print(f"输入 tokens: {response.usage.input_tokens}")
+print(f"输出 tokens: {response.usage.output_tokens}")
+print(f"总 tokens: {response.usage.input_tokens + response.usage.output_tokens}")
+
+# 估算成本（以 Haiku 为例）
+input_cost = response.usage.input_tokens * 0.00025 / 1000
+output_cost = response.usage.output_tokens * 0.00125 / 1000
+total_cost = input_cost + output_cost
+print(f"估算成本: ${total_cost:.4f}")
+```
+
+**解决方案**：
+
+**方案 1：优化提示**
+- 移除冗余内容
+- 使用更简洁的表达
+- 避免重复信息
+
+**方案 2：控制输出长度**
+```python
+# 设置合理的 max_tokens
+response = client.messages.create(
+    max_tokens=500,  # 而不是 4096
+    ...
+)
+```
+
+**方案 3：使用缓存**
+```python
+# 缓存常见查询的结果
+from functools import lru_cache
+
+@lru_cache(maxsize=1000)
+def get_response(prompt):
+    return call_claude(prompt)
+```
+
+---
+
+## 质量问题
+
+### 问题 12：输出质量不稳定
+
+**症状**：
+- 相同提示产生不同质量的输出
+- 有时好有时差
+
+**原因**：
+- temperature 设置过高
+- 提示不够明确
+- 缺少示例
+
+**解决方案**：
+
+**方案 1：设置 temperature = 0**
+```python
+response = client.messages.create(
+    temperature=0.0,  # 最大化一致性
+    ...
+)
+```
+
+**方案 2：提供更明确的指令**
+```python
+PROMPT = """
+严格按照以下格式输出：
+
+格式：
+- 第一行：标题
+- 第二行：摘要（不超过50字）
+- 第三行开始：详细内容
+
+示例：
+标题：示例标题
+摘要：这是一个示例摘要，不超过五十字。
+详细内容从这里开始...
+"""
+```
+
+**方案 3：使用少样本学习**
+```python
+PROMPT = """
+示例1：
+输入：{example1_input}
+输出：{example1_output}
+
+示例2：
+输入：{example2_input}
+输出：{example2_output}
+
+现在处理：
+输入：{actual_input}
+输出：
+"""
+```
+
+### 问题 13：输出不够准确
+
+**症状**：
+- 事实错误
+- 逻辑错误
+- 理解偏差
+
+**解决方案**：
+
+**方案 1：使用思维链**
+```python
+PROMPT = """
+请逐步分析：
+
+1. 理解问题
+2. 识别关键信息
+3. 逐步推理
+4. 得出结论
+5. 验证答案
+
+问题：{question}
+"""
+```
+
+**方案 2：提供更多上下文**
+```python
+PROMPT = """
+<context>
+{relevant_context}
+</context>
+
+<question>
+{question}
+</question>
+
+基于上述上下文回答问题。
+"""
+```
+
+**方案 3：使用更强大的模型**
+```python
+# 对于复杂任务，使用 Opus
+model = "claude-3-opus-20240229"
+```
+
+---
+
+## 成本问题
+
+### 问题 14：成本超出预算
+
+**症状**：
+- API 费用高于预期
+- 成本增长过快
+
+**诊断**：
+
+```python
+# 追踪每个请求的成本
+def track_cost(response, model):
+    # Haiku 价格（示例）
+    prices = {
+        "claude-3-haiku-20240307": {
+            "input": 0.00025 / 1000,
+            "output": 0.00125 / 1000
+        },
+        # 其他模型...
+    }
+    
+    input_cost = response.usage.input_tokens * prices[model]["input"]
+    output_cost = response.usage.output_tokens * prices[model]["output"]
+    
+    return {
+        "input_tokens": response.usage.input_tokens,
+        "output_tokens": response.usage.output_tokens,
+        "input_cost": input_cost,
+        "output_cost": output_cost,
+        "total_cost": input_cost + output_cost
+    }
+```
+
+**解决方案**：
+
+**方案 1：使用更经济的模型**
+```python
+# 对于简单任务，使用 Haiku
+model = "claude-3-haiku-20240307"  # 最便宜
+```
+
+**方案 2：优化提示长度**
+- 移除不必要的内容
+- 使用摘要而非全文
+- 批量处理
+
+**方案 3：实施成本控制**
+```python
+class CostController:
+    def __init__(self, daily_budget=10.0):
+        self.daily_budget = daily_budget
+        self.daily_cost = 0.0
+        self.last_reset = datetime.now().date()
+    
+    def check_budget(self, estimated_cost):
+        # 检查是否需要重置
+        if datetime.now().date() > self.last_reset:
+            self.daily_cost = 0.0
+            self.last_reset = datetime.now().date()
+        
+        # 检查预算
+        if self.daily_cost + estimated_cost > self.daily_budget:
+            raise Exception("超出每日预算")
+        
+        self.daily_cost += estimated_cost
+```
+
+---
+
+## 调试技巧和工具
+
+### 1. 启用详细日志
+
+```python
+import logging
+
+# 配置日志
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+# 记录请求详情
+logger = logging.getLogger(__name__)
+
+def call_claude_with_logging(prompt):
+    logger.info(f"发送请求，提示长度: {len(prompt)}")
+    
+    try:
+        response = client.messages.create(...)
+        logger.info(f"收到响应，tokens: {response.usage.input_tokens + response.usage.output_tokens}")
+        return response
+    except Exception as e:
+        logger.error(f"请求失败: {str(e)}")
+        raise
+```
+
+### 2. 使用调试包装器
+
+```python
+class DebugClient:
+    def __init__(self, client):
+        self.client = client
+        self.requests = []
+    
+    def messages_create(self, **kwargs):
+        # 记录请求
+        request_info = {
+            "timestamp": datetime.now(),
+            "model": kwargs.get("model"),
+            "prompt_length": len(str(kwargs.get("messages"))),
+            "max_tokens": kwargs.get("max_tokens")
+        }
+        
+        try:
+            response = self.client.messages.create(**kwargs)
+            request_info["success"] = True
+            request_info["tokens"] = response.usage.input_tokens + response.usage.output_tokens
+            return response
+        except Exception as e:
+            request_info["success"] = False
+            request_info["error"] = str(e)
+            raise
+        finally:
+            self.requests.append(request_info)
+    
+    def get_stats(self):
+        total_requests = len(self.requests)
+        successful = sum(1 for r in self.requests if r["success"])
+        failed = total_requests - successful
+        
+        return {
+            "total_requests": total_requests,
+            "successful": successful,
+            "failed": failed,
+            "success_rate": successful / total_requests if total_requests > 0 else 0
+        }
+
+# 使用
+debug_client = DebugClient(client)
+response = debug_client.messages_create(...)
+print(debug_client.get_stats())
+```
+
+### 3. 提示调试工具
+
+```python
+def debug_prompt(prompt):
+    """分析提示的潜在问题"""
+    issues = []
+    
+    # 检查长度
+    if len(prompt) > 10000:
+        issues.append("⚠️ 提示过长，可能影响性能")
+    
+    # 检查是否包含明确指令
+    if "请" not in prompt and "输出" not in prompt:
+        issues.append("⚠️ 缺少明确的指令动词")
+    
+    # 检查是否有格式说明
+    if "格式" not in prompt and "JSON" not in prompt:
+        issues.append("💡 考虑添加输出格式说明")
+    
+    # 检查是否有示例
+    if "示例" not in prompt and "例如" not in prompt:
+        issues.append("💡 考虑添加示例以提高质量")
+    
+    return issues
+
+# 使用
+issues = debug_prompt(my_prompt)
+for issue in issues:
+    print(issue)
+```
+
+### 4. 响应验证工具
+
+```python
+def validate_response(response, expected_format=None, required_fields=None):
+    """验证响应是否符合预期"""
+    validation_results = {
+        "valid": True,
+        "issues": []
+    }
+    
+    text = response.content[0].text
+    
+    # 检查是否被截断
+    if response.stop_reason == "max_tokens":
+        validation_results["valid"] = False
+        validation_results["issues"].append("响应被截断")
+    
+    # 检查格式
+    if expected_format == "json":
+        try:
+            data = json.loads(text)
+            
+            # 检查必需字段
+            if required_fields:
+                for field in required_fields:
+                    if field not in data:
+                        validation_results["valid"] = False
+                        validation_results["issues"].append(f"缺少字段: {field}")
+        except json.JSONDecodeError:
+            validation_results["valid"] = False
+            validation_results["issues"].append("不是有效的 JSON")
+    
+    return validation_results
+
+# 使用
+validation = validate_response(
+    response,
+    expected_format="json",
+    required_fields=["sentiment", "keywords"]
+)
+
+if not validation["valid"]:
+    print("验证失败:")
+    for issue in validation["issues"]:
+        print(f"  - {issue}")
+```
+
+### 5. 性能分析工具
+
+```python
+import time
+from collections import defaultdict
+
+class PerformanceProfiler:
+    def __init__(self):
+        self.metrics = defaultdict(list)
+    
+    def profile(self, name):
+        def decorator(func):
+            def wrapper(*args, **kwargs):
+                start_time = time.time()
+                result = func(*args, **kwargs)
+                end_time = time.time()
+                
+                self.metrics[name].append(end_time - start_time)
+                return result
+            return wrapper
+        return decorator
+    
+    def report(self):
+        for name, times in self.metrics.items():
+            avg_time = sum(times) / len(times)
+            min_time = min(times)
+            max_time = max(times)
+            
+            print(f"{name}:")
+            print(f"  平均: {avg_time:.2f}s")
+            print(f"  最小: {min_time:.2f}s")
+            print(f"  最大: {max_time:.2f}s")
+            print(f"  调用次数: {len(times)}")
+
+# 使用
+profiler = PerformanceProfiler()
+
+@profiler.profile("claude_call")
+def call_claude(prompt):
+    return client.messages.create(...)
+
+# 执行多次调用
+for prompt in prompts:
+    call_claude(prompt)
+
+# 查看报告
+profiler.report()
+```
+
+### 6. 推荐的第三方工具
+
+**监控和分析**：
+- **Langfuse**：LLM 应用性能监控
+- **Helicone**：API 调用追踪和分析
+- **Weights & Biases**：实验追踪
+
+**开发工具**：
+- **Jupyter Notebook**：交互式开发和调试
+- **Postman**：API 测试
+- **curl**：命令行 API 测试
+
+**日志和错误追踪**：
+- **Sentry**：错误追踪
+- **Datadog**：应用监控
+- **CloudWatch**：AWS 环境监控
+
+---
+
+## 获取帮助
+
+### 1. 自助资源
+
+**官方文档**：
+- [Anthropic 文档](https://docs.anthropic.com/)
+- [API 参考](https://docs.anthropic.com/claude/reference/)
+- [最佳实践](https://docs.anthropic.com/claude/docs/best-practices)
+
+**本项目文档**：
+- [设计原理](design-principles.md)
+- [性能优化](performance.md)
+- [常见问题](faq.md)
+- [完整使用手册](../user-guide/user-guide.md)
+
+### 2. 社区支持
+
+**Anthropic 社区**：
+- [Discord 服务器](https://discord.gg/anthropic)
+- [社区论坛](https://community.anthropic.com/)
+- [GitHub Discussions](https://github.com/anthropics/anthropic-sdk-python/discussions)
+
+**提问技巧**：
+1. 提供完整的错误信息
+2. 包含最小可复现示例
+3. 说明已尝试的解决方案
+4. 描述预期行为和实际行为
+
+### 3. 技术支持
+
+**Anthropic 支持**：
+- 企业客户：通过 Anthropic Console 提交工单
+- 技术问题：support@anthropic.com
+- 安全问题：security@anthropic.com
+
+**AWS Bedrock 支持**：
+- AWS Support Center
+- AWS 论坛
+- AWS 文档
+
+### 4. 报告问题
+
+**提交 Bug 报告时包含**：
+```
+环境信息：
+- 操作系统：
+- Python 版本：
+- SDK 版本：
+- 模型：
+
+问题描述：
+[详细描述问题]
+
+复现步骤：
+1. 
+2. 
+3. 
+
+预期行为：
+[描述预期结果]
+
+实际行为：
+[描述实际结果]
+
+错误信息：
+```
+[完整的错误日志]
+```
+
+最小可复现代码：
+```python
+[最简单的能复现问题的代码]
+```
+```
+
+---
+
+## 相关资源
+
+### 官方资源
+- [Anthropic 官网](https://www.anthropic.com/)
+- [Claude API 文档](https://docs.anthropic.com/claude/)
+- [Anthropic Console](https://console.anthropic.com/)
+- [状态页面](https://status.anthropic.com/)
+
+### 开发资源
+- [Python SDK](https://github.com/anthropics/anthropic-sdk-python)
+- [TypeScript SDK](https://github.com/anthropics/anthropic-sdk-typescript)
+- [Cookbook](https://github.com/anthropics/anthropic-cookbook)
+
+### 学习资源
+- [提示工程指南](https://docs.anthropic.com/claude/docs/prompt-engineering)
+- [最佳实践](https://docs.anthropic.com/claude/docs/best-practices)
+- [示例项目](https://github.com/anthropics/anthropic-cookbook)
+
+### 相关文档
+- [设计原理](design-principles.md)：理解问题背后的原理
+- [性能优化](performance.md)：提高性能和降低成本
+- [常见问题](faq.md)：快速查找答案
+- [API 参考](../user-guide/api-reference.md)：API 详细说明
+
+---
+
+**上一步**：[性能优化](performance.md)  
+**下一步**：[常见问题](faq.md)
+
+**相关文档**：
+- [完整使用手册](../user-guide/user-guide.md)
+- [安装指南](../getting-started/installation.md)
+- [快速开始](../getting-started/quickstart.md)
+
+

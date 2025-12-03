@@ -22,6 +22,27 @@
 
 准备好开始时，请前往 `01_Basic Prompt Structure` 继续学习。
 
+## 版本说明
+
+本教程提供三个不同的实现版本，适用于不同的使用场景：
+
+### 🟦 Anthropic 1P（第一方 API）
+**位置**：`Anthropic 1P/` 目录  
+**适用场景**：快速开始、个人学习、原型开发  
+**特点**：使用 Anthropic 官方 API，配置简单，功能最新
+
+### 🟧 Bedrock Anthropic SDK
+**位置**：`AmazonBedrock/anthropic/` 目录  
+**适用场景**：AWS 企业用户、需要 AWS 集成  
+**特点**：通过 AWS Bedrock 使用 Anthropic SDK，保持熟悉的 API 风格
+
+### 🟨 Bedrock Boto3
+**位置**：`AmazonBedrock/boto3/` 目录  
+**适用场景**：深度 AWS 集成、需要底层控制  
+**特点**：使用 AWS 原生 Boto3 SDK，完全的 AWS 原生体验
+
+**如何选择？** 查看 [版本对比文档](docs/zh/versions/comparison.md) 了解详细差异和选择建议。
+
 ## 目录
 
 每个章节包含一节课程和一组练习。
@@ -57,15 +78,7 @@
   - 工具使用
   - 搜索与检索
 
-## 版本说明
 
-本项目提供三个版本的教程实现：
-
-1. **Anthropic 1P**：使用 Anthropic 官方 API
-2. **Amazon Bedrock (Anthropic SDK)**：使用 AWS Bedrock 上的 Anthropic SDK
-3. **Amazon Bedrock (Boto3)**：使用 AWS Boto3 SDK
-
-请根据您的使用场景选择合适的版本。详细的版本对比和选择指南，请参阅[版本对比文档](docs/zh/versions/comparison.md)。
 
 ## 快速开始
 

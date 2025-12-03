@@ -698,3 +698,404 @@ for chunk in data_chunks:
     processed_so_far.append(result)
 ```
 
+
+---
+
+## 性能测试方法
+
+### 1. 建立基准
+
+**步骤 1：定义测试用例**
+```python
+test_cases = [
+    {
+        "name": "简单分类",
+        "prompt": "这段文本的情感是正面还是负面？{text}",
+        "expected_quality": "高",
+        "max_latency": 1.0  # 秒
+    },
+    {
+        "name": "复杂分析",
+        "prompt": "深入分析这份报告：{report}",
+        "expected_quality": "非常高",
+        "max_latency": 5.0
+    }
+]
+```
+
+**步骤 2：测量性能指标**
+```python
+import time
+
+def measure_performance(prompt, model):
+    start_time = time.time()
+    
+    response = client.messages.create(
+        model=model,
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    
+    end_time = time.time()
+    
+    return {
+        "latency": end_time - start_time,
+        "input_tokens": response.usage.input_tokens,
+        "output_tokens": response.usage.output_tokens,
+        "response": response.content[0].text
+    }
+```
+
+**步骤 3：记录结果**
+```python
+results = []
+for test_case in test_cases:
+    result = measure_performance(test_case["prompt"], "claude-3-haiku-20240307")
+    results.append({
+        "test": test_case["name"],
+        "latency": result["latency"],
+        "tokens": result["input_tokens"] + result["output_tokens"],
+        "meets_requirements": result["latency"] <= test_case["max_latency"]
+    })
+```
+
+### 2. A/B 测试
+
+**比较不同提示版本**：
+```python
+def ab_test(prompt_a, prompt_b, test_data, n_runs=10):
+    results_a = []
+    results_b = []
+    
+    for _ in range(n_runs):
+        for data in test_data:
+            # 测试版本 A
+            result_a = measure_performance(prompt_a.format(**data), model)
+            results_a.append(result_a)
+            
+            # 测试版本 B
+            result_b = measure_performance(prompt_b.format(**data), model)
+            results_b.append(result_b)
+    
+    # 比较平均性能
+    avg_latency_a = sum(r["latency"] for r in results_a) / len(results_a)
+    avg_latency_b = sum(r["latency"] for r in results_b) / len(results_b)
+    
+    print(f"版本 A 平均延迟: {avg_latency_a:.2f}s")
+    print(f"版本 B 平均延迟: {avg_latency_b:.2f}s")
+    
+    return results_a, results_b
+```
+
+### 3. 质量评估
+
+**自动化质量检查**：
+```python
+def evaluate_quality(response, expected_format, expected_content):
+    checks = {
+        "format_correct": check_format(response, expected_format),
+        "content_complete": check_completeness(response, expected_content),
+        "factually_accurate": check_accuracy(response),
+        "relevant": check_relevance(response)
+    }
+    
+    quality_score = sum(checks.values()) / len(checks)
+    return quality_score, checks
+
+def check_format(response, expected_format):
+    """检查输出格式是否符合预期"""
+    if expected_format == "json":
+        try:
+            json.loads(response)
+            return True
+        except:
+            return False
+    # 其他格式检查...
+    return True
+```
+
+### 4. 负载测试
+
+**测试高并发场景**：
+```python
+import concurrent.futures
+
+def load_test(prompt, n_concurrent=10, n_requests=100):
+    def make_request():
+        return measure_performance(prompt, model)
+    
+    start_time = time.time()
+    
+    with concurrent.futures.ThreadPoolExecutor(max_workers=n_concurrent) as executor:
+        futures = [executor.submit(make_request) for _ in range(n_requests)]
+        results = [f.result() for f in concurrent.futures.as_completed(futures)]
+    
+    end_time = time.time()
+    
+    total_time = end_time - start_time
+    avg_latency = sum(r["latency"] for r in results) / len(results)
+    throughput = n_requests / total_time
+    
+    print(f"总时间: {total_time:.2f}s")
+    print(f"平均延迟: {avg_latency:.2f}s")
+    print(f"吞吐量: {throughput:.2f} 请求/秒")
+    
+    return results
+```
+
+---
+
+## 基准测试
+
+### 1. 不同模型的性能对比
+
+**测试设置**：
+- 任务：情感分析
+- 输入：100 条产品评论
+- 评估指标：准确性、速度、成本
+
+**结果示例**：
+
+| 模型 | 准确率 | 平均延迟 | 总成本 | 综合评分 |
+|------|--------|----------|--------|----------|
+| Haiku | 92% | 0.8s | $0.50 | ⭐⭐⭐⭐ |
+| Sonnet | 96% | 1.5s | $1.50 | ⭐⭐⭐⭐⭐ |
+| Opus | 98% | 2.5s | $7.50 | ⭐⭐⭐⭐ |
+
+**结论**：
+- Haiku：最适合高频、简单任务
+- Sonnet：最佳性价比
+- Opus：需要最高准确性时使用
+
+### 2. 提示优化前后对比
+
+**优化前**：
+```python
+PROMPT_V1 = """
+请帮我分析一下这个客户反馈。我需要知道客户是否满意，
+以及他们提到了哪些具体的问题。请给我一个详细的分析报告。
+谢谢！
+
+客户反馈：{feedback}
+"""
+```
+
+**优化后**：
+```python
+PROMPT_V2 = """
+分析客户反馈，提供：
+1. 满意度（满意/不满意）
+2. 提到的具体问题（列表）
+
+<feedback>
+{feedback}
+</feedback>
+"""
+```
+
+**性能对比**：
+
+| 指标 | 优化前 | 优化后 | 改进 |
+|------|--------|--------|------|
+| 平均延迟 | 2.1s | 1.3s | ⬇️ 38% |
+| 输入 tokens | 85 | 45 | ⬇️ 47% |
+| 输出 tokens | 150 | 80 | ⬇️ 47% |
+| 成本 | $0.015 | $0.007 | ⬇️ 53% |
+| 格式一致性 | 75% | 98% | ⬆️ 31% |
+
+### 3. 批处理 vs 单独处理
+
+**场景**：处理 100 个项目
+
+**方法 1：单独处理**
+```python
+for item in items:
+    result = call_claude(f"处理：{item}")
+# 总时间：100 * 1.5s = 150s
+# 总成本：100 * $0.01 = $1.00
+```
+
+**方法 2：批处理**
+```python
+batch_prompt = "处理以下项目：\n" + "\n".join(f"{i}. {item}" for i, item in enumerate(items))
+result = call_claude(batch_prompt)
+# 总时间：8s
+# 总成本：$0.15
+```
+
+**对比**：
+- 速度提升：18.75x
+- 成本降低：85%
+- 权衡：批处理可能降低单个项目的处理质量
+
+---
+
+## 实际案例分析
+
+### 案例 1：客户服务聊天机器人
+
+**场景**：
+- 每天 10,000 次对话
+- 平均每次对话 5 轮
+- 需要快速响应（< 2 秒）
+
+**初始方案**：
+- 模型：Claude 3 Opus
+- 每次都发送完整对话历史
+- 月成本：约 $15,000
+
+**优化方案**：
+1. **模型分层**：
+   - 简单问题（FAQ）：Haiku
+   - 复杂问题：Sonnet
+   - 仅在必要时升级到 Opus
+
+2. **上下文管理**：
+   - 保存对话摘要而非完整历史
+   - 只发送最近 3 轮对话
+
+3. **缓存常见问题**：
+   - 预生成 FAQ 答案
+   - 使用语义搜索匹配
+
+**优化结果**：
+- 平均响应时间：从 2.5s 降至 1.2s
+- 月成本：从 $15,000 降至 $3,500（节省 77%）
+- 用户满意度：从 85% 提升至 92%
+
+### 案例 2：文档分析系统
+
+**场景**：
+- 分析法律合同（平均 50 页）
+- 提取关键条款和风险
+- 需要高准确性
+
+**初始方案**：
+- 一次性发送整个文档
+- 经常超出 token 限制
+- 处理时间：5-10 分钟
+
+**优化方案**：
+1. **分段处理**：
+   ```python
+   # 步骤 1：分段总结
+   summaries = []
+   for section in document.sections:
+       summary = call_haiku(f"总结这一部分：{section}")
+       summaries.append(summary)
+   
+   # 步骤 2：综合分析
+   analysis = call_opus(f"基于这些总结，分析风险：{summaries}")
+   ```
+
+2. **两阶段分析**：
+   - 第一阶段（Haiku）：快速扫描，识别重要部分
+   - 第二阶段（Opus）：深入分析重要部分
+
+**优化结果**：
+- 处理时间：从 7 分钟降至 2 分钟
+- 成本：从 $2.50/文档降至 $0.80/文档
+- 准确性：保持在 95% 以上
+
+### 案例 3：内容审核系统
+
+**场景**：
+- 每小时审核 50,000 条用户评论
+- 需要实时处理
+- 预算有限
+
+**初始方案**：
+- 模型：Claude 3 Sonnet
+- 每条评论单独调用
+- 无法满足实时要求
+
+**优化方案**：
+1. **规则预筛选**：
+   ```python
+   # 使用简单规则过滤明显安全的内容
+   if simple_rule_check(comment):
+       return "approved"
+   # 只有可疑内容才调用 Claude
+   return call_claude_haiku(f"审核：{comment}")
+   ```
+
+2. **批处理**：
+   - 每 10 秒收集一批评论
+   - 批量发送给 Claude
+
+3. **缓存相似内容**：
+   - 使用向量相似度检测重复内容
+   - 相似内容使用缓存结果
+
+**优化结果**：
+- API 调用减少 80%
+- 成本从 $5,000/月降至 $800/月
+- 处理延迟从 3 秒降至 0.5 秒
+- 准确性保持在 98%
+
+---
+
+## 相关资源
+
+### 官方文档
+- [Anthropic API 定价](https://www.anthropic.com/pricing)
+- [性能最佳实践](https://docs.anthropic.com/claude/docs/best-practices)
+- [API 参考文档](https://docs.anthropic.com/claude/reference/)
+
+### 性能监控工具
+- **Anthropic Console**：查看 API 使用情况和成本
+- **Langfuse**：LLM 应用性能监控
+- **Helicone**：API 调用追踪和分析
+- **Weights & Biases**：实验追踪和对比
+
+### 相关文档
+- [设计原理](design-principles.md)：理解优化背后的原理
+- [问题排查](troubleshooting.md)：解决性能问题
+- [API 参考](../user-guide/api-reference.md)：API 使用详情
+
+### 社区资源
+- [Anthropic Discord](https://discord.gg/anthropic)：与其他开发者交流
+- [GitHub Cookbook](https://github.com/anthropics/anthropic-cookbook)：实用示例
+- [性能优化案例集](https://community.anthropic.com/performance)
+
+---
+
+## 下一步
+
+掌握性能优化后，您可以：
+
+1. **实施优化**：
+   - 在您的应用中应用本文档的技巧
+   - 建立性能监控系统
+   - 定期评估和优化
+
+2. **深入学习**：
+   - [问题排查](troubleshooting.md)：解决常见性能问题
+   - [设计原理](design-principles.md)：理解深层原理
+   - [常见问题](faq.md)：查找具体问题的答案
+
+3. **持续改进**：
+   - 建立性能基准
+   - A/B 测试新方法
+   - 记录和分享最佳实践
+
+4. **扩展应用**：
+   - 探索高级功能（工具使用、提示链）
+   - 集成到生产系统
+   - 优化用户体验
+
+5. **参与社区**：
+   - 分享您的优化经验
+   - 学习他人的最佳实践
+   - 贡献开源项目
+
+---
+
+**上一步**：[设计原理](design-principles.md)  
+**下一步**：[问题排查](troubleshooting.md)
+
+**相关文档**：
+- [完整使用手册](../user-guide/user-guide.md)
+- [API 参考](../user-guide/api-reference.md)
+- [常见问题](faq.md)
+

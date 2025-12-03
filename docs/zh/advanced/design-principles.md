@@ -540,6 +540,21 @@ AI 模型在不断进化，提示技巧也需要更新。
 
 ---
 
+## 另请参阅
+
+**进阶文档**：
+- [性能优化](performance.md) - 应用原理优化性能
+- [问题排查](troubleshooting.md) - 基于原理解决问题
+- [常见问题](faq.md) - 常见疑问解答
+
+**使用文档**：
+- [完整使用手册](../user-guide/user-guide.md) - 实践中应用原理
+- [示例集合](../user-guide/examples.md) - 原理的具体应用
+
+**开发文档**：
+- [架构设计](../development/architecture.md) - 项目架构原理
+- [开发指南](../development/development-guide.md) - 开发最佳实践
+
 ## 相关资源
 
 ### 官方文档
@@ -556,11 +571,6 @@ AI 模型在不断进化，提示技巧也需要更新。
 - [Anthropic Discord 社区](https://discord.gg/anthropic)
 - [提示工程论坛](https://community.anthropic.com/)
 - [GitHub 示例库](https://github.com/anthropics/anthropic-cookbook)
-
-### 相关教程
-- [高级提示技巧](performance.md)
-- [问题排查指南](troubleshooting.md)
-- [常见问题解答](faq.md)
 
 ---
 
@@ -592,11 +602,8 @@ AI 模型在不断进化，提示技巧也需要更新。
 
 ---
 
-**上一步**：[主页](../../README.md)  
-**下一步**：[性能优化](performance.md)
-
-**相关文档**：
-- [完整使用手册](../user-guide/user-guide.md)
-- [架构设计](../development/architecture.md)
-- [常见问题](faq.md)
+**文档导航**：
+- **上一步**：[主页](../../README.md)
+- **下一步**：[性能优化](performance.md)
+- **相关主题**: [完整使用手册](../user-guide/user-guide.md) | [架构设计](../development/architecture.md) | [问题排查](troubleshooting.md)
 

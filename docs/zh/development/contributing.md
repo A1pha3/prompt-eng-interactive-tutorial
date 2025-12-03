@@ -640,6 +640,8 @@ git push origin main
 - [开发指南](development-guide.md) - 环境搭建和开发流程
 - [架构设计](architecture.md) - 项目架构说明
 - [代码规范](code-style.md) - 编码标准和最佳实践
+- [开发术语表](glossary-dev.md) - 开发相关术语中英文对照
+- [完整术语表](../glossary.md) - 项目完整术语表
 
 ---
 

@@ -454,11 +454,13 @@ notebooks/
 - [Python 设计模式](https://refactoring.guru/design-patterns/python)
 - [API 设计最佳实践](https://swagger.io/resources/articles/best-practices-in-api-design/)
 
-### 下一步
+### 项目文档
 
 - [开发指南](development-guide.md) - 了解如何搭建开发环境
 - [贡献指南](contributing.md) - 了解如何为项目做贡献
 - [代码规范](code-style.md) - 了解代码风格要求
+- [开发术语表](glossary-dev.md) - 开发相关术语中英文对照
+- [完整术语表](../glossary.md) - 项目完整术语表
 
 ---
 

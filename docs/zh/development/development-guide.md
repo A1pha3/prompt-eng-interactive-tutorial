@@ -674,6 +674,8 @@ def call_with_retry(func, max_retries=3):
 - [架构设计](architecture.md) - 了解项目架构
 - [贡献指南](contributing.md) - 了解贡献流程
 - [代码规范](code-style.md) - 了解代码风格
+- [开发术语表](glossary-dev.md) - 开发相关术语中英文对照
+- [完整术语表](../glossary.md) - 项目完整术语表
 
 ### 学习资源
 

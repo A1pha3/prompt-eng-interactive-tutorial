@@ -546,8 +546,15 @@ rm -rf <repository-name>
 - [配置说明](../user-guide/configuration.md) - 详细的配置选项
 - [版本对比](../versions/comparison.md) - 选择适合您的版本
 
-## 相关资源
+## 另请参阅
 
+**相关文档**：
+- [快速开始](quickstart.md) - 完成安装后的下一步
+- [配置说明](../user-guide/configuration.md) - 高级配置选项
+- [问题排查](../advanced/troubleshooting.md) - 解决安装问题
+- [版本对比](../versions/comparison.md) - 了解不同版本
+
+**外部资源**：
 - [Python 官方文档](https://docs.python.org/)
 - [Jupyter 文档](https://jupyter.org/documentation)
 - [Anthropic API 文档](https://docs.anthropic.com/)
@@ -564,5 +571,7 @@ rm -rf <repository-name>
 
 ---
 
-**上一步**: [主页](../../README.md)  
-**下一步**: [快速开始](quickstart.md)
+**文档导航**：
+- **上一步**: [主页](../../README.md)
+- **下一步**: [快速开始](quickstart.md)
+- **相关主题**: [配置说明](../user-guide/configuration.md) | [问题排查](../advanced/troubleshooting.md)

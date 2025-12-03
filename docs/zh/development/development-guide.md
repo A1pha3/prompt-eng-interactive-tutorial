@@ -660,6 +660,22 @@ def call_with_retry(func, max_retries=3):
 - 关闭不需要的 Notebook
 - 检查内存使用：`!free -h`（Linux）或 `!vm_stat`（macOS）
 
+## 另请参阅
+
+**开发文档**：
+- [架构设计](architecture.md) - 了解项目架构和设计模式
+- [贡献指南](contributing.md) - 了解如何为项目做贡献
+- [代码规范](code-style.md) - 遵循代码风格和最佳实践
+- [开发术语表](glossary-dev.md) - 开发相关术语中英文对照
+
+**入门文档**：
+- [安装指南](../getting-started/installation.md) - 用户安装步骤
+- [快速开始](../getting-started/quickstart.md) - 快速上手教程
+
+**进阶文档**：
+- [问题排查](../advanced/troubleshooting.md) - 解决开发中的问题
+- [性能优化](../advanced/performance.md) - 优化代码性能
+
 ## 相关资源
 
 ### 官方文档
@@ -668,14 +684,6 @@ def call_with_retry(func, max_retries=3):
 - [AWS Bedrock 文档](https://docs.aws.amazon.com/bedrock/)
 - [Jupyter 文档](https://jupyter.org/documentation)
 - [Python 官方文档](https://docs.python.org/3/)
-
-### 开发指南
-
-- [架构设计](architecture.md) - 了解项目架构
-- [贡献指南](contributing.md) - 了解贡献流程
-- [代码规范](code-style.md) - 了解代码风格
-- [开发术语表](glossary-dev.md) - 开发相关术语中英文对照
-- [完整术语表](../glossary.md) - 项目完整术语表
 
 ### 学习资源
 
@@ -694,7 +702,7 @@ def call_with_retry(func, max_retries=3):
 **最后更新**：2024-12-02  
 **维护者**：项目团队
 
-**下一步**：
-- 阅读[贡献指南](contributing.md)了解如何提交代码
-- 查看[代码规范](code-style.md)了解编码标准
-- 浏览[架构设计](architecture.md)了解系统设计
+**文档导航**：
+- **上一步**: [主页](../../README.md)
+- **下一步**: [贡献指南](contributing.md)
+- **相关主题**: [架构设计](architecture.md) | [代码规范](code-style.md) | [问题排查](../advanced/troubleshooting.md)

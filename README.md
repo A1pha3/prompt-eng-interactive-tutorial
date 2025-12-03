@@ -110,35 +110,136 @@ jupyter notebook
 
 完整的快速开始教程请参阅[快速开始文档](docs/zh/getting-started/quickstart.md)。
 
-## 文档导航
+## 📖 完整文档地图
 
-### 📚 入门文档
-- [安装指南](docs/zh/getting-started/installation.md) - 详细的安装步骤和环境配置
-- [快速开始](docs/zh/getting-started/quickstart.md) - 5 分钟快速上手教程
+本项目提供全面的中文文档体系，涵盖从入门到进阶的所有内容。以下是完整的文档导航：
 
-### 📖 使用文档
-- [完整使用手册](docs/zh/user-guide/user-guide.md) - 所有章节的详细说明
-- [API 参考](docs/zh/user-guide/api-reference.md) - API 接口文档
-- [配置说明](docs/zh/user-guide/configuration.md) - 配置选项和环境变量
-- [示例集合](docs/zh/user-guide/examples.md) - 实用示例和最佳实践
+### 📚 入门文档（Getting Started）
 
-### 🔧 开发文档
-- [架构设计](docs/zh/development/architecture.md) - 项目架构和设计模式
-- [开发指南](docs/zh/development/development-guide.md) - 开发环境搭建
-- [贡献指南](docs/zh/development/contributing.md) - 如何为项目做贡献
-- [代码规范](docs/zh/development/code-style.md) - 代码风格和规范
+新手必读，快速上手教程：
 
-### 🚀 进阶文档
-- [设计原理](docs/zh/advanced/design-principles.md) - 提示工程的核心原理
-- [性能优化](docs/zh/advanced/performance.md) - 优化技巧和最佳实践
-- [问题排查](docs/zh/advanced/troubleshooting.md) - 常见问题和解决方案
-- [常见问题](docs/zh/advanced/faq.md) - FAQ
+- **[安装指南](docs/zh/getting-started/installation.md)**  
+  详细的安装步骤、环境配置、依赖项说明，支持 macOS、Linux 和 Windows 系统。包含常见安装问题的故障排除。
 
-### 🔄 版本文档
-- [版本对比](docs/zh/versions/comparison.md) - 三个版本的特性对比
-- [Anthropic 1P](docs/zh/versions/anthropic-1p.md) - Anthropic 官方 API 版本
-- [Bedrock Anthropic SDK](docs/zh/versions/bedrock-anthropic.md) - AWS Bedrock Anthropic SDK 版本
-- [Bedrock Boto3](docs/zh/versions/bedrock-boto3.md) - AWS Bedrock Boto3 版本
+- **[快速开始](docs/zh/getting-started/quickstart.md)**  
+  5 分钟快速上手教程，通过第一个示例快速体验 Claude 提示工程的核心功能。
+
+### 📖 使用文档（User Guide）
+
+深入了解功能和使用方法：
+
+- **[完整使用手册](docs/zh/user-guide/user-guide.md)**  
+  涵盖所有 9 个章节的详细说明，从基本提示结构到复杂提示构建的完整学习路径。包含每章的学习目标、关键概念和实践练习。
+
+- **[API 参考](docs/zh/user-guide/api-reference.md)**  
+  完整的 API 接口文档，包含所有可用方法、参数说明、返回值和代码示例。按功能模块组织，便于查找。
+
+- **[配置说明](docs/zh/user-guide/configuration.md)**  
+  详细的配置选项和环境变量说明，包含不同版本的配置差异和配置文件示例。
+
+- **[示例集合](docs/zh/user-guide/examples.md)**  
+  从 Notebook 中提取的实用示例，按使用场景分类，每个示例都包含说明和预期输出。
+
+### 🔧 开发文档（Development）
+
+为项目做出贡献：
+
+- **[架构设计](docs/zh/development/architecture.md)**  
+  项目的整体架构和设计模式，包含架构图和各组件的职责说明。帮助理解项目结构。
+
+- **[开发指南](docs/zh/development/development-guide.md)**  
+  开发环境搭建的详细步骤，包含如何运行和调试项目，以及开发工具推荐。
+
+- **[贡献指南](docs/zh/development/contributing.md)**  
+  如何为项目贡献代码和文档，包含代码提交流程、Pull Request 规范和审查检查清单。
+
+- **[代码规范](docs/zh/development/code-style.md)**  
+  Python 代码风格规范、Notebook 编写规范和文档编写规范，确保代码质量和一致性。
+
+- **[开发术语表](docs/zh/development/glossary-dev.md)**  
+  开发相关的中英文术语对照表，确保技术术语使用的一致性。
+
+### 🚀 进阶文档（Advanced）
+
+深度技术内容和最佳实践：
+
+- **[设计原理](docs/zh/advanced/design-principles.md)**  
+  提示工程的核心设计原理和教学理念，解析关键设计决策的背景和理由。
+
+- **[性能优化](docs/zh/advanced/performance.md)**  
+  提示优化的最佳实践，如何提高响应速度和质量，包含性能测试和基准测试方法。
+
+- **[问题排查](docs/zh/advanced/troubleshooting.md)**  
+  常见问题和解决方案，按问题类型分类组织，提供调试技巧和工具推荐。
+
+- **[常见问题 FAQ](docs/zh/advanced/faq.md)**  
+  高频问题解答，涵盖使用、配置、开发等各方面的常见疑问。
+
+### 🔄 版本文档（Versions）
+
+了解不同版本的特性和选择：
+
+- **[版本对比](docs/zh/versions/comparison.md)**  
+  Anthropic 1P、Bedrock Anthropic SDK、Bedrock Boto3 三个版本的详细对比，包含特性对比表格和版本选择建议。
+
+- **[Anthropic 1P 版本](docs/zh/versions/anthropic-1p.md)**  
+  Anthropic 官方 API 版本的特点、适用场景、配置说明和专门示例。
+
+- **[Bedrock Anthropic SDK 版本](docs/zh/versions/bedrock-anthropic.md)**  
+  AWS Bedrock Anthropic SDK 版本的特点、AWS 配置说明和使用示例。
+
+- **[Bedrock Boto3 版本](docs/zh/versions/bedrock-boto3.md)**  
+  AWS Bedrock Boto3 版本的特点、Boto3 配置说明和使用示例。
+
+- **[版本文档中心](docs/zh/versions/README.md)**  
+  版本文档的总览和快速导航。
+
+### 📝 其他资源
+
+- **[术语表](docs/zh/glossary.md)**  
+  完整的中英文技术术语对照表，确保文档中术语使用的一致性。
+
+- **[文档模板](docs/zh/templates/README.md)**  
+  文档编写模板和规范，用于创建新文档或扩展现有文档。
+
+- **[中文文档中心](docs/zh/README.md)**  
+  中文文档的总入口，提供文档导航和快速链接。
+
+---
+
+## 🎯 快速导航
+
+根据您的需求，选择合适的起点：
+
+### 我是新手，想快速开始
+1. 📥 阅读 [安装指南](docs/zh/getting-started/installation.md) 配置环境
+2. ⚡ 完成 [快速开始](docs/zh/getting-started/quickstart.md) 教程
+3. 📚 浏览 [示例集合](docs/zh/user-guide/examples.md) 学习实践
+4. 🔄 查看 [版本对比](docs/zh/versions/comparison.md) 选择适合的版本
+
+### 我想深入学习提示工程
+1. 📖 阅读 [完整使用手册](docs/zh/user-guide/user-guide.md) 系统学习
+2. 🔍 查看 [API 参考](docs/zh/user-guide/api-reference.md) 了解接口
+3. 🎓 学习 [设计原理](docs/zh/advanced/design-principles.md) 理解核心概念
+4. 🚀 研究 [性能优化](docs/zh/advanced/performance.md) 提升技能
+
+### 我想为项目做贡献
+1. 🏗️ 了解 [架构设计](docs/zh/development/architecture.md) 理解项目结构
+2. 💻 阅读 [开发指南](docs/zh/development/development-guide.md) 搭建环境
+3. 📋 查看 [贡献指南](docs/zh/development/contributing.md) 了解流程
+4. ✨ 遵循 [代码规范](docs/zh/development/code-style.md) 保证质量
+
+### 我遇到了问题
+1. ❓ 查看 [常见问题 FAQ](docs/zh/advanced/faq.md) 寻找答案
+2. 🔧 参考 [问题排查](docs/zh/advanced/troubleshooting.md) 解决问题
+3. 📖 检查 [配置说明](docs/zh/user-guide/configuration.md) 确认配置
+4. 💬 在 GitHub 提交 Issue 获取帮助
+
+### 我需要选择版本
+1. 📊 阅读 [版本对比](docs/zh/versions/comparison.md) 了解差异
+2. 🟦 查看 [Anthropic 1P](docs/zh/versions/anthropic-1p.md) - 适合快速开始
+3. 🟧 查看 [Bedrock Anthropic SDK](docs/zh/versions/bedrock-anthropic.md) - 适合 AWS 用户
+4. 🟨 查看 [Bedrock Boto3](docs/zh/versions/bedrock-boto3.md) - 适合深度 AWS 集成
 
 ## 术语表
 

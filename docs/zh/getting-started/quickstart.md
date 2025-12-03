@@ -318,12 +318,24 @@ print(get_completion(my_prompt))
 4. **了解不同版本**
    - 如果您使用 AWS，查看[版本对比](../versions/comparison.md)
 
-## 相关资源
+## 另请参阅
 
-- [安装指南](installation.md) - 详细的安装步骤
+**入门文档**：
+- [安装指南](installation.md) - 如需重新配置环境
 - [配置说明](../user-guide/configuration.md) - 高级配置选项
+
+**学习资源**：
+- [完整使用手册](../user-guide/user-guide.md) - 系统学习所有章节
+- [示例集合](../user-guide/examples.md) - 实用示例和最佳实践
 - [API 参考](../user-guide/api-reference.md) - API 详细文档
-- [常见问题](../advanced/faq.md) - 更多问题解答
+
+**版本相关**：
+- [版本对比](../versions/comparison.md) - 选择适合的版本
+- [Anthropic 1P 版本](../versions/anthropic-1p.md) - 本快速开始使用的版本
+
+**问题解决**：
+- [问题排查](../advanced/troubleshooting.md) - 解决常见问题
+- [常见问题](../advanced/faq.md) - FAQ
 
 ## 获取帮助
 
@@ -334,5 +346,7 @@ print(get_completion(my_prompt))
 
 ---
 
-**上一步**: [安装指南](installation.md)  
-**下一步**: [第一章：基本提示词结构](../../Anthropic%201P/01_Basic_Prompt_Structure.ipynb)
+**文档导航**：
+- **上一步**: [安装指南](installation.md)
+- **下一步**: [完整使用手册](../user-guide/user-guide.md)
+- **相关主题**: [示例集合](../user-guide/examples.md) | [API 参考](../user-guide/api-reference.md)

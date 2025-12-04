@@ -140,7 +140,7 @@ jupyter notebook
 
 打开 `00_Tutorial_How-To.ipynb` 文件，在相应的单元格中设置您的 API 密钥：
 
-```python
+```ipython
 API_KEY = "your_api_key_here"  # 替换为您的实际 API 密钥
 MODEL_NAME = "claude-3-haiku-20240307"
 

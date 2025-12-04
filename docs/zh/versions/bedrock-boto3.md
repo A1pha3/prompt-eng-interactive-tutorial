@@ -170,7 +170,7 @@ jupyter notebook
 
 打开 `00_Tutorial_How-To.ipynb` 并运行：
 
-```python
+```ipython
 import boto3
 
 # 获取当前区域

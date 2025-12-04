@@ -656,8 +656,9 @@ print(f"估算成本: ${total_cost:.4f}")
 ```python
 # 设置合理的 max_tokens
 response = client.messages.create(
+    model="claude-3-haiku-20240307",
     max_tokens=500,  # 而不是 4096
-    ...
+    messages=[{"role": "user", "content": "你的提示"}]
 )
 ```
 
@@ -691,8 +692,10 @@ def get_response(prompt):
 **方案 1：设置 temperature = 0**
 ```python
 response = client.messages.create(
+    model="claude-3-haiku-20240307",
+    max_tokens=1024,
     temperature=0.0,  # 最大化一致性
-    ...
+    messages=[{"role": "user", "content": "你的提示"}]
 )
 ```
 

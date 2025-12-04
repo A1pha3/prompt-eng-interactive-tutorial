@@ -272,7 +272,9 @@ print(message.content[0].text)
 
 **函数签名**：
 ```python
-def get_completion(prompt: str, system_prompt: str = "") -> str
+def get_completion(prompt: str, system_prompt: str = "") -> str:
+    """获取 Claude 的完成响应"""
+    pass
 ```
 
 **参数**：

@@ -161,8 +161,10 @@
 **方法 1：设置 temperature = 0**
 ```python
 response = client.messages.create(
+    model="claude-3-haiku-20240307",
+    max_tokens=1024,
     temperature=0.0,  # 最大化一致性
-    ...
+    messages=[{"role": "user", "content": "你的提示"}]
 )
 ```
 
@@ -470,8 +472,12 @@ with client.messages.stream(...) as stream:
 
 **策略 2：并行处理**
 ```python
-# 对于多个独立请求
-results = await asyncio.gather(*tasks)
+import asyncio
+
+async def process_requests():
+    # 对于多个独立请求
+    results = await asyncio.gather(*tasks)
+    return results
 ```
 
 **策略 3：优化提示**

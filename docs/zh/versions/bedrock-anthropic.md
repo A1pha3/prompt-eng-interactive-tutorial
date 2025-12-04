@@ -215,7 +215,7 @@ jupyter notebook
 3. 设置区域和模型名称
 4. 测试连接
 
-```python
+```ipython
 import boto3
 
 # 自动获取当前区域

@@ -76,7 +76,7 @@ jupyter notebook
 
 找到包含以下代码的单元格，将 `"your_api_key_here"` 替换为您的实际 API 密钥：
 
-```python
+```ipython
 API_KEY = "your_api_key_here"  # 替换为您的 API 密钥
 MODEL_NAME = "claude-3-haiku-20240307"
 

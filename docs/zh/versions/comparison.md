@@ -269,11 +269,11 @@ result = response_body.get('content')[0].get('text')
 
 2. **更改导入语句**
    ```python
-   # 之前
-   import anthropic
-   
-   # 之后
-   from anthropic import AnthropicBedrock
+# 之前
+import anthropic
+
+# 之后
+from anthropic import AnthropicBedrock
    ```
 
 3. **更改客户端初始化**
@@ -580,14 +580,14 @@ response = claude.create_message(
 
 1. **更新导入**
    ```python
-   # 之前
-   from anthropic import AnthropicBedrock
-   client = AnthropicBedrock(aws_region="us-east-1")
-   
-   # 之后
-   import boto3
-   import json
-   bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+# 之前
+from anthropic import AnthropicBedrock
+client = AnthropicBedrock(aws_region="us-east-1")
+
+# 之后
+import boto3
+import json
+bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
    ```
 
 2. **重写 API 调用**（参考上面的 Boto3 迁移步骤）
@@ -621,35 +621,35 @@ response = claude.create_message(
 
 2. **更新导入和初始化**
    ```python
-   # 之前
-   import boto3
-   import json
-   bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
-   
-   # 之后
-   from anthropic import AnthropicBedrock
-   client = AnthropicBedrock(aws_region="us-east-1")
+# 之前
+import boto3
+import json
+bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+
+# 之后
+from anthropic import AnthropicBedrock
+client = AnthropicBedrock(aws_region="us-east-1")
    ```
 
 3. **简化 API 调用**
    ```python
-   # 之前 (Boto3) - 复杂
-   body = json.dumps({
-       "anthropic_version": "",
-       "max_tokens": 2000,
-       "messages": [{"role": "user", "content": prompt}]
-   })
-   response = bedrock.invoke_model(body=body, modelId=model_id)
-   response_body = json.loads(response['body'].read())
-   text = response_body['content'][0]['text']
-   
-   # 之后 (Anthropic SDK) - 简单
-   message = client.messages.create(
-       model=model_id,
-       max_tokens=2000,
-       messages=[{"role": "user", "content": prompt}]
-   )
-   text = message.content[0].text
+# 之前 (Boto3) - 复杂
+body = json.dumps({
+    "anthropic_version": "",
+    "max_tokens": 2000,
+    "messages": [{"role": "user", "content": prompt}]
+})
+response = bedrock.invoke_model(body=body, modelId=model_id)
+response_body = json.loads(response['body'].read())
+text = response_body['content'][0]['text']
+
+# 之后 (Anthropic SDK) - 简单
+message = client.messages.create(
+    model=model_id,
+    max_tokens=2000,
+    messages=[{"role": "user", "content": prompt}]
+)
+text = message.content[0].text
    ```
 
 **优势**：

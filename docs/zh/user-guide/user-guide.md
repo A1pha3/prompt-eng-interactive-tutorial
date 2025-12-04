@@ -83,7 +83,7 @@ pip install anthropic
 #### 2. API 密钥配置
 在开始使用教程之前，您需要设置 API 密钥：
 
-```python
+```ipython
 API_KEY = "your_api_key_here"
 MODEL_NAME = "claude-3-haiku-20240307"
 
@@ -720,16 +720,16 @@ PROMPT = """<email>
 ```
 
 **3. 使用描述性标签名**
-```python
-# ✅ 清晰
+```xml
+<!-- ✅ 清晰 -->
 <customer_complaint>...</customer_complaint>
 
-# ❌ 模糊
+<!-- ❌ 模糊 -->
 <data>...</data>
 ```
 
 **4. 保持标签层次清晰**
-```python
+```xml
 <conversation>
   <message role="user">
     你好！

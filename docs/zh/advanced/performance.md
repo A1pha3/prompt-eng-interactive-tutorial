@@ -978,14 +978,14 @@ result = call_claude(batch_prompt)
 **优化方案**：
 1. **分段处理**：
    ```python
-   # 步骤 1：分段总结
-   summaries = []
-   for section in document.sections:
-       summary = call_haiku(f"总结这一部分：{section}")
-       summaries.append(summary)
-   
-   # 步骤 2：综合分析
-   analysis = call_opus(f"基于这些总结，分析风险：{summaries}")
+# 步骤 1：分段总结
+summaries = []
+for section in document.sections:
+    summary = call_haiku(f"总结这一部分：{section}")
+    summaries.append(summary)
+
+# 步骤 2：综合分析
+analysis = call_opus(f"基于这些总结，分析风险：{summaries}")
    ```
 
 2. **两阶段分析**：
@@ -1012,11 +1012,12 @@ result = call_claude(batch_prompt)
 **优化方案**：
 1. **规则预筛选**：
    ```python
-   # 使用简单规则过滤明显安全的内容
-   if simple_rule_check(comment):
-       return "approved"
-   # 只有可疑内容才调用 Claude
-   return call_claude_haiku(f"审核：{comment}")
+def moderate_comment(comment):
+    # 使用简单规则过滤明显安全的内容
+    if simple_rule_check(comment):
+        return "approved"
+    # 只有可疑内容才调用 Claude
+    return call_claude_haiku(f"审核：{comment}")
    ```
 
 2. **批处理**：

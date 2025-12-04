@@ -323,7 +323,7 @@ print(f"响应内容: {response.content}")
 
 #### 2. 使用 IPython 魔法命令
 
-```python
+```ipython
 # 查看变量内容
 %whos
 

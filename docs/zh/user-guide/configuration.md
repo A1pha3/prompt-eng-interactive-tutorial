@@ -246,7 +246,7 @@ verify_api_key()
 
 **在 Notebook 中配置**：
 
-```python
+```ipython
 # 00_Tutorial_How-To.ipynb
 API_KEY = "your_api_key_here"
 MODEL_NAME = "claude-3-haiku-20240307"
@@ -300,7 +300,7 @@ CUSTOM_CONFIG = {
 教程使用 IPython store 在 Notebook 间共享变量：
 
 **存储变量**：
-```python
+```ipython
 # 在第一个 Notebook 中
 API_KEY = "your_api_key"
 MODEL_NAME = "claude-3-haiku-20240307"
@@ -310,26 +310,26 @@ MODEL_NAME = "claude-3-haiku-20240307"
 ```
 
 **读取变量**：
-```python
+```ipython
 # 在后续 Notebook 中
 %store -r API_KEY
 %store -r MODEL_NAME
 ```
 
 **查看所有存储的变量**：
-```python
+```ipython
 %store
 ```
 
 **删除变量**：
-```python
+```ipython
 %store -d API_KEY
 ```
 
 ### Jupyter 配置
 
 **自动重载模块**：
-```python
+```ipython
 %load_ext autoreload
 %autoreload 2
 ```
@@ -643,8 +643,8 @@ AuthenticationError: API key not found
 
 2. 在 Python 中验证：
    ```python
-   import os
-   print(os.getenv("ANTHROPIC_API_KEY"))
+import os
+print(os.getenv("ANTHROPIC_API_KEY"))
    ```
 
 3. 确保在正确的 shell 中设置了变量
@@ -671,7 +671,7 @@ TimeoutError: Request timed out
 **解决方案**：
 1. 增加超时时间：
    ```python
-   client = Anthropic(api_key=API_KEY, timeout=600.0)
+client = Anthropic(api_key=API_KEY, timeout=600.0)
    ```
 
 2. 检查网络连接

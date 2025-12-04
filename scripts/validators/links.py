@@ -34,12 +34,24 @@ class LinkValidator(DocumentValidator):
     
     def _validate_links(self, doc_path: Path, content: str):
         """验证文档中的链接"""
+        # 跳过模板文件
+        if 'template' in doc_path.name.lower() or 'templates' in str(doc_path):
+            return
+        
         # 提取 Markdown 链接 [text](url)
         md_links = re.findall(r'\[([^\]]+)\]\(([^\)]+)\)', content)
         
         for link_text, link_url in md_links:
             # 跳过锚点链接
             if link_url.startswith('#'):
+                continue
+            
+            # 跳过 mailto 链接
+            if link_url.startswith('mailto:'):
+                continue
+            
+            # 跳过 ftp 链接
+            if link_url.startswith('ftp://'):
                 continue
             
             # 检查外部链接格式

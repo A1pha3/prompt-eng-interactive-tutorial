@@ -251,7 +251,7 @@ jupyter notebook
 
 ## 许可证
 
-请参阅 [LICENSE](LICENSE) 文件了解详情。
+请参阅 [LICENSE](AmazonBedrock/LICENSE) 文件了解详情。
 
 ## 相关资源
 

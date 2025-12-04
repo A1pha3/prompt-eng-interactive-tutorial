@@ -353,7 +353,7 @@ print(f"输出 tokens: {response.usage.output_tokens}")
 
 ## 许可证
 
-本项目采用 MIT 许可证。详见 [LICENSE](../LICENSE) 文件。
+本项目采用 MIT 许可证。详见 [LICENSE](../AmazonBedrock/LICENSE) 文件。
 
 ---
 

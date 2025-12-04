@@ -1,15 +1,15 @@
 {
   "metadata": {
-    "generated_at": "2025-12-04T13:12:33.391382",
+    "generated_at": "2025-12-04T17:25:40.570812",
     "root_dir": "/Volumes/mini_matrix/github/prompt/prompt-eng-interactive-tutorial",
-    "duration_seconds": 0.063326
+    "duration_seconds": 0.059511
   },
   "summary": {
     "total_checks": 7,
-    "passed_checks": 6,
-    "failed_checks": 1,
-    "total_errors": 27,
-    "total_warnings": 95
+    "passed_checks": 7,
+    "failed_checks": 0,
+    "total_errors": 0,
+    "total_warnings": 97
   },
   "results": {
     "文档存在性": {
@@ -29,37 +29,12 @@
       "stats": {}
     },
     "代码示例": {
-      "success": false,
-      "errors": [
-        "文档 docs/zh/advanced/troubleshooting.md 代码块 #39 存在语法错误: positional argument follows keyword argument (行 5)",
-        "文档 docs/zh/advanced/troubleshooting.md 代码块 #41 存在语法错误: positional argument follows keyword argument (行 4)",
-        "文档 docs/zh/advanced/faq.md 代码块 #1 存在语法错误: positional argument follows keyword argument (行 4)",
-        "文档 docs/zh/advanced/faq.md 代码块 #21 存在语法错误: 'await' outside function (行 2)",
-        "文档 docs/zh/advanced/performance.md 代码块 #45 存在语法错误: unexpected indent (行 2)",
-        "文档 docs/zh/advanced/performance.md 代码块 #46 存在语法错误: unexpected indent (行 2)",
-        "文档 docs/zh/user-guide/user-guide.md 代码块 #2 存在语法错误: invalid syntax (行 5)",
-        "文档 docs/zh/user-guide/user-guide.md 代码块 #46 存在语法错误: invalid syntax (行 2)",
-        "文档 docs/zh/user-guide/user-guide.md 代码块 #47 存在语法错误: invalid syntax (行 1)",
-        "文档 docs/zh/user-guide/configuration.md 代码块 #12 存在语法错误: invalid syntax (行 6)",
-        "文档 docs/zh/user-guide/configuration.md 代码块 #16 存在语法错误: invalid syntax (行 5)",
-        "文档 docs/zh/user-guide/configuration.md 代码块 #17 存在语法错误: invalid syntax (行 2)",
-        "文档 docs/zh/user-guide/configuration.md 代码块 #18 存在语法错误: invalid syntax (行 1)",
-        "文档 docs/zh/user-guide/configuration.md 代码块 #19 存在语法错误: invalid syntax (行 1)",
-        "文档 docs/zh/user-guide/configuration.md 代码块 #20 存在语法错误: invalid syntax (行 1)",
-        "文档 docs/zh/user-guide/configuration.md 代码块 #42 存在语法错误: unexpected indent (行 1)",
-        "文档 docs/zh/user-guide/configuration.md 代码块 #45 存在语法错误: unexpected indent (行 1)",
-        "文档 docs/zh/user-guide/api-reference.md 代码块 #12 存在语法错误: invalid syntax (行 1)",
-        "文档 docs/zh/development/development-guide.md 代码块 #15 存在语法错误: invalid syntax (行 2)",
-        "文档 docs/zh/versions/comparison.md 代码块 #12 存在语法错误: unexpected indent (行 2)",
-        "文档 docs/zh/versions/comparison.md 代码块 #22 存在语法错误: unexpected indent (行 2)",
-        "文档 docs/zh/versions/comparison.md 代码块 #24 存在语法错误: unexpected indent (行 2)",
-        "文档 docs/zh/versions/comparison.md 代码块 #25 存在语法错误: unexpected indent (行 2)",
-        "文档 docs/zh/versions/anthropic-1p.md 代码块 #6 存在语法错误: invalid syntax (行 5)",
-        "文档 docs/zh/versions/bedrock-boto3.md 代码块 #10 存在语法错误: invalid syntax (行 11)",
-        "文档 docs/zh/versions/bedrock-anthropic.md 代码块 #10 存在语法错误: invalid syntax (行 11)",
-        "文档 docs/zh/getting-started/quickstart.md 代码块 #2 存在语法错误: invalid syntax (行 5)"
-      ],
+      "success": true,
+      "errors": [],
       "warnings": [
+        "文档 docs/zh/MAINTENANCE_GUIDE.md 代码块 #13 未指定语言",
+        "文档 docs/zh/MAINTENANCE_GUIDE.md 代码块 #14 未指定语言",
+        "文档 docs/zh/MAINTENANCE_GUIDE.md 代码块 #15 未指定语言",
         "文档 docs/zh/advanced/design-principles.md 代码块 #1 未指定语言",
         "文档 docs/zh/advanced/design-principles.md 代码块 #2 未指定语言",
         "文档 docs/zh/advanced/design-principles.md 代码块 #3 未指定语言",
@@ -176,9 +151,7 @@
     "术语一致性": {
       "success": true,
       "errors": [],
-      "warnings": [
-        "术语 '文档系统' 在文档中未被使用"
-      ],
+      "warnings": [],
       "info": [],
       "stats": {}
     },

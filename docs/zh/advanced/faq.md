@@ -857,7 +857,7 @@ response = client.messages.create(
 ---
 
 **上一步**：[问题排查](troubleshooting.md)  
-**下一步**：[主页](../../README.md)
+**下一步**：[主页](../../../README.md)
 
 **相关文档**：
 - [设计原理](design-principles.md)

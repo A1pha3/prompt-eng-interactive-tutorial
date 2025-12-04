@@ -590,6 +590,6 @@ rm -rf <repository-name>
 ---
 
 **文档导航**：
-- **上一步**: [主页](../../README.md)
+- **上一步**: [主页](../../../README.md)
 - **下一步**: [快速开始](quickstart.md)
 - **相关主题**: [配置说明](../user-guide/configuration.md) | [问题排查](../advanced/troubleshooting.md)

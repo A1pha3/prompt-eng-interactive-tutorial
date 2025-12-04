@@ -603,7 +603,7 @@ AI 模型在不断进化，提示技巧也需要更新。
 ---
 
 **文档导航**：
-- **上一步**：[主页](../../README.md)
+- **上一步**：[主页](../../../README.md)
 - **下一步**：[性能优化](performance.md)
 - **相关主题**: [完整使用手册](../user-guide/user-guide.md) | [架构设计](../development/architecture.md) | [问题排查](troubleshooting.md)
 

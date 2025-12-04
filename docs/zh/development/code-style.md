@@ -686,11 +686,11 @@ pip install anthropic
 
 ```markdown
 # 正确
-查看[安装指南](getting-started/installation.md)了解详情。
+查看[安装指南](../getting-started/installation.md)了解详情。
 访问 [Anthropic 官方文档](https://docs.anthropic.com/)。
 
 # 错误
-点击[这里](getting-started/installation.md)。
+点击[这里](../getting-started/installation.md)。
 访问 https://docs.anthropic.com/。
 ```
 
@@ -785,8 +785,9 @@ pip install anthropic
 
 ## 相关资源
 
-- [相关文档 1](link1.md)
-- [相关文档 2](link2.md)
+- [开发指南](./development-guide.md)
+- [贡献指南](./contributing.md)
+- [架构设计](./architecture.md)
 
 ---
 

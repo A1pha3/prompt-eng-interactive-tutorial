@@ -703,6 +703,6 @@ def call_with_retry(func, max_retries=3):
 **维护者**：项目团队
 
 **文档导航**：
-- **上一步**: [主页](../../README.md)
+- **上一步**: [主页](../../../README.md)
 - **下一步**: [贡献指南](contributing.md)
 - **相关主题**: [架构设计](architecture.md) | [代码规范](code-style.md) | [问题排查](../advanced/troubleshooting.md)

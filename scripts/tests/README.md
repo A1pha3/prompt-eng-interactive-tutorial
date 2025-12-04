@@ -27,8 +27,14 @@ python -m pytest scripts/test_validators.py -v
 # 运行文档存在性测试
 python -m pytest scripts/test_validators.py::TestDocumentExistence -v
 
+# 运行导航链接完整性测试
+python -m pytest scripts/test_navigation_links.py -v
+
 # 运行特定的属性测试
 python -m pytest scripts/test_validators.py::TestDocumentExistence::test_required_documents_exist_for_all_categories -v
+
+# 运行特定的导航链接测试
+python -m pytest scripts/test_navigation_links.py::TestNavigationLinkCompleteness::test_main_readme_contains_documentation_index -v
 ```
 
 ### 查看 Hypothesis 统计信息
@@ -47,6 +53,7 @@ python -m pytest scripts/test_validators.py -v --tb=long
 
 ### 属性 1：必需文档存在性
 
+**测试文件**: `test_validators.py`  
 **验证需求**: 1.2, 1.3, 2.1, 2.3, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3, 4.4
 
 **属性描述**: 对于任何文档类别（入门、使用、开发、进阶），该类别下的所有必需文档文件都应该存在于正确的目录路径中。
@@ -56,6 +63,20 @@ python -m pytest scripts/test_validators.py -v --tb=long
 - `test_required_directories_exist`: 验证所有必需的目录结构都存在
 - `test_all_categories_have_documents`: 验证文档类别定义的完整性
 - `test_existence_checker_integration`: 集成测试，验证检查器的整体功能
+
+### 属性 7：导航链接完整性
+
+**测试文件**: `test_navigation_links.py`  
+**验证需求**: 6.1, 6.2, 6.3
+
+**属性描述**: 对于任何文档，它应该包含指向相关文档的内部链接，并且主 README 应该包含指向所有文档的索引链接。
+
+**测试内容**:
+- `test_documents_contain_internal_navigation_links`: 验证文档包含内部导航链接
+- `test_main_readme_contains_documentation_index`: 验证主 README 包含文档索引
+- `test_category_documents_have_cross_references`: 验证同类别文档有交叉引用
+- `test_documents_have_related_documents_section`: 验证文档有相关文档章节
+- `test_all_major_documents_are_reachable_from_readme`: 验证所有主要文档可从 README 访问
 
 ## 测试配置
 

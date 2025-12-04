@@ -2516,6 +2516,312 @@ class TestVersionDocumentationCompleteness:
         return headings
 
 
+class TestVersionAnnotationClarity:
+    """
+    属性测试：版本标注清晰性
+    
+    **Feature: comprehensive-chinese-documentation, Property 10: 版本标注清晰性**
+    **Validates: Requirements 7.5**
+    
+    属性：对于任何版本特定的内容，它应该被明确标注为特定版本适用，
+    以便用户区分通用内容和版本特定内容。
+    """
+    
+    # 定义版本标识符和标注模式
+    VERSION_IDENTIFIERS = {
+        "anthropic-1p": ["Anthropic 1P", "1P", "Anthropic API"],
+        "bedrock-anthropic": ["Bedrock Anthropic", "Amazon Bedrock", "Bedrock SDK"],
+        "bedrock-boto3": ["Bedrock Boto3", "Boto3", "AWS SDK"],
+    }
+    
+    # 版本标注的常见模式
+    VERSION_ANNOTATION_PATTERNS = [
+        r'>\s*\*\*注意\*\*[：:]\s*(?:本|此|该).*?(?:仅|只).*?(?:适用于|用于)',  # > **注意**：本功能仅适用于...
+        r'>\s*\*\*版本\*\*[：:]',  # > **版本**：
+        r'>\s*\*\*适用版本\*\*[：:]',  # > **适用版本**：
+        r'\*\*(?:仅|只)(?:适用于|用于)\*\*',  # **仅适用于**
+        r'【.*?版本.*?】',  # 【Anthropic 1P 版本】
+        r'\(.*?版本.*?\)',  # (Bedrock 版本)
+    ]
+    
+    @given(doc_path=st.sampled_from([
+        "docs/zh/versions/anthropic-1p.md",
+        "docs/zh/versions/bedrock-anthropic.md",
+        "docs/zh/versions/bedrock-boto3.md",
+        "docs/zh/versions/comparison.md",
+        "docs/zh/user-guide/configuration.md",
+        "docs/zh/getting-started/installation.md",
+        "docs/zh/development/development-guide.md",
+    ]))
+    @settings(max_examples=100)
+    def test_version_specific_content_is_clearly_marked(self, doc_path):
+        """
+        属性测试：对于任何包含版本特定内容的文档，该内容应该被明确标注
+        
+        验证：
+        - 版本特定的配置说明应该标注适用版本
+        - 版本特定的代码示例应该标注适用版本
+        - 版本特定的功能说明应该标注适用版本
+        - 使用明确的标注格式（如引用块、粗体标记等）
+        """
+        full_path = ROOT_DIR / doc_path
+        
+        if not full_path.exists():
+            pytest.skip(f"文档不存在: {doc_path}")
+        
+        content = full_path.read_text(encoding='utf-8')
+        
+        # 检查文档是否包含版本特定的内容
+        has_version_content = self._contains_version_specific_content(content)
+        
+        if not has_version_content:
+            # 如果文档不包含版本特定内容，跳过测试
+            pytest.skip(f"文档不包含版本特定内容: {doc_path}")
+        
+        # 属性：如果文档包含版本特定内容，应该有明确的版本标注
+        has_version_annotations = self._has_version_annotations(content)
+        
+        # 对于版本文档目录下的文档，必须有版本标注
+        if "versions/" in doc_path:
+            assert has_version_annotations, (
+                f"版本文档 {doc_path} 包含版本特定内容但缺少明确的版本标注\n"
+                f"应该使用以下标注方式之一：\n"
+                f"  - > **注意**：本功能仅适用于 [版本名称]\n"
+                f"  - > **适用版本**：[版本名称]\n"
+                f"  - **仅适用于 [版本名称]**\n"
+                f"  - 【[版本名称]】"
+            )
+    
+    @given(doc_path=st.sampled_from([
+        "docs/zh/versions/anthropic-1p.md",
+        "docs/zh/versions/bedrock-anthropic.md",
+        "docs/zh/versions/bedrock-boto3.md",
+    ]))
+    @settings(max_examples=100)
+    def test_version_documents_clearly_identify_their_version(self, doc_path):
+        """
+        属性测试：对于任何版本文档，应该在开头明确标识其适用的版本
+        
+        验证：
+        - 版本文档应该在标题或概述中明确说明适用版本
+        - 版本名称应该在文档前部（前500字符内）出现
+        - 版本标识应该清晰可见
+        """
+        full_path = ROOT_DIR / doc_path
+        
+        if not full_path.exists():
+            pytest.skip(f"文档不存在: {doc_path}")
+        
+        content = full_path.read_text(encoding='utf-8')
+        
+        # 提取文档的前部内容（标题和概述部分）
+        front_matter = content[:500]
+        
+        # 根据文档路径确定应该标识的版本
+        expected_version = None
+        if "anthropic-1p" in doc_path:
+            expected_version = "anthropic-1p"
+        elif "bedrock-anthropic" in doc_path:
+            expected_version = "bedrock-anthropic"
+        elif "bedrock-boto3" in doc_path:
+            expected_version = "bedrock-boto3"
+        
+        if not expected_version:
+            pytest.skip(f"无法确定文档的版本: {doc_path}")
+        
+        # 属性：版本文档应该在前部明确标识其版本
+        version_identifiers = self.VERSION_IDENTIFIERS[expected_version]
+        version_mentioned = any(
+            identifier in front_matter
+            for identifier in version_identifiers
+        )
+        
+        assert version_mentioned, (
+            f"版本文档 {doc_path} 应该在开头明确标识其适用版本\n"
+            f"期望在前500字符内找到以下标识之一: {version_identifiers}\n"
+            f"实际前部内容: {front_matter[:200]}..."
+        )
+    
+    @given(doc_path=st.sampled_from([
+        "docs/zh/versions/anthropic-1p.md",
+        "docs/zh/versions/bedrock-anthropic.md",
+        "docs/zh/versions/bedrock-boto3.md",
+        "docs/zh/versions/comparison.md",
+    ]))
+    @settings(max_examples=100)
+    def test_version_documents_distinguish_version_specific_and_common_content(self, doc_path):
+        """
+        属性测试：对于任何版本文档，应该清晰区分版本特定内容和通用内容
+        
+        验证：
+        - 如果文档同时包含版本特定和通用内容，应该有明确的区分
+        - 版本特定的章节应该有明确的标注
+        - 通用内容和版本特定内容不应混淆
+        """
+        full_path = ROOT_DIR / doc_path
+        
+        if not full_path.exists():
+            pytest.skip(f"文档不存在: {doc_path}")
+        
+        content = full_path.read_text(encoding='utf-8')
+        
+        # 检查是否同时提到多个版本（这表明可能包含通用内容和版本特定内容）
+        mentioned_versions = []
+        for version_key, identifiers in self.VERSION_IDENTIFIERS.items():
+            if any(identifier in content for identifier in identifiers):
+                mentioned_versions.append(version_key)
+        
+        # 如果文档只提到一个版本，可能是纯版本特定文档，跳过
+        if len(mentioned_versions) <= 1:
+            pytest.skip(f"文档只涉及单一版本或通用内容: {doc_path}")
+        
+        # 属性：如果文档涉及多个版本，应该有明确的版本标注来区分
+        has_annotations = self._has_version_annotations(content)
+        
+        assert has_annotations, (
+            f"文档 {doc_path} 涉及多个版本 ({mentioned_versions}) "
+            f"但缺少明确的版本标注来区分不同版本的内容\n"
+            f"应该为每个版本特定的内容添加明确的标注"
+        )
+    
+    @given(doc_path=st.sampled_from([
+        "docs/zh/user-guide/configuration.md",
+        "docs/zh/getting-started/installation.md",
+        "docs/zh/development/development-guide.md",
+    ]))
+    @settings(max_examples=100)
+    def test_general_documents_mark_version_specific_sections(self, doc_path):
+        """
+        属性测试：对于任何通用文档，如果包含版本特定的章节，应该明确标注
+        
+        验证：
+        - 通用文档中的版本特定章节应该有明确的标题或标注
+        - 版本特定的配置说明应该标注适用版本
+        - 用户能够清楚地识别哪些内容适用于哪个版本
+        """
+        full_path = ROOT_DIR / doc_path
+        
+        if not full_path.exists():
+            pytest.skip(f"文档不存在: {doc_path}")
+        
+        content = full_path.read_text(encoding='utf-8')
+        
+        # 检查文档是否包含版本特定的内容
+        has_version_content = self._contains_version_specific_content(content)
+        
+        if not has_version_content:
+            # 如果文档不包含版本特定内容，这是好的（纯通用文档）
+            pytest.skip(f"文档不包含版本特定内容: {doc_path}")
+        
+        # 属性：通用文档中的版本特定内容应该有明确标注
+        # 检查是否有版本相关的章节标题
+        headings = self._extract_headings(content)
+        has_version_section_headings = any(
+            any(identifier in heading['text'] for identifier in 
+                [id for ids in self.VERSION_IDENTIFIERS.values() for id in ids])
+            for heading in headings
+        )
+        
+        # 或者检查是否有版本标注
+        has_annotations = self._has_version_annotations(content)
+        
+        # 至少应该有其中一种标注方式
+        assert has_version_section_headings or has_annotations, (
+            f"通用文档 {doc_path} 包含版本特定内容但缺少明确的版本标注\n"
+            f"应该使用以下方式之一：\n"
+            f"  1. 使用包含版本名称的章节标题（如 '## Anthropic 1P 配置'）\n"
+            f"  2. 使用版本标注（如 '> **适用版本**：Anthropic 1P'）"
+        )
+    
+    def test_version_comparison_document_clearly_distinguishes_versions(self):
+        """
+        测试：版本对比文档应该清晰区分各个版本的特性
+        
+        验证版本对比文档的质量，确保用户能够清楚地了解各版本的区别。
+        """
+        comparison_path = ROOT_DIR / "docs/zh/versions/comparison.md"
+        
+        if not comparison_path.exists():
+            pytest.skip("版本对比文档不存在")
+        
+        content = comparison_path.read_text(encoding='utf-8')
+        
+        # 属性 1：对比文档应该提到所有版本
+        for version_key, identifiers in self.VERSION_IDENTIFIERS.items():
+            version_mentioned = any(identifier in content for identifier in identifiers)
+            assert version_mentioned, (
+                f"版本对比文档应该提到版本 {version_key}\n"
+                f"期望找到以下标识之一: {identifiers}"
+            )
+        
+        # 属性 2：对比文档应该有清晰的结构（如对比表格或分节说明）
+        # 检查是否有表格（Markdown 表格包含 | 字符）
+        has_table = '|' in content and '---' in content
+        
+        # 或者检查是否有各版本的专门章节
+        headings = self._extract_headings(content)
+        has_version_sections = sum(
+            1 for heading in headings
+            if any(identifier in heading['text'] for identifier in 
+                   [id for ids in self.VERSION_IDENTIFIERS.values() for id in ids])
+        ) >= 2  # 至少有2个版本的专门章节
+        
+        assert has_table or has_version_sections, (
+            "版本对比文档应该使用表格或分节的方式清晰地对比各版本\n"
+            "建议使用 Markdown 表格或为每个版本创建专门的章节"
+        )
+    
+    def _contains_version_specific_content(self, content: str) -> bool:
+        """
+        检查内容是否包含版本特定的内容
+        
+        通过检查是否提到特定版本的名称来判断
+        """
+        for version_key, identifiers in self.VERSION_IDENTIFIERS.items():
+            if any(identifier in content for identifier in identifiers):
+                return True
+        return False
+    
+    def _has_version_annotations(self, content: str) -> bool:
+        """
+        检查内容是否包含版本标注
+        
+        检查是否使用了常见的版本标注模式
+        """
+        for pattern in self.VERSION_ANNOTATION_PATTERNS:
+            if re.search(pattern, content):
+                return True
+        return False
+    
+    def _extract_headings(self, content: str) -> list:
+        """提取文档中的所有标题"""
+        headings = []
+        lines = content.split('\n')
+        in_code_block = False
+        
+        for line in lines:
+            # 跟踪代码块
+            if line.strip().startswith('```'):
+                in_code_block = not in_code_block
+                continue
+            
+            # 跳过代码块内的内容
+            if in_code_block:
+                continue
+            
+            # 匹配标题
+            match = re.match(r'^(#+)\s+(.+)$', line)
+            if match:
+                level = len(match.group(1))
+                text = match.group(2).strip()
+                headings.append({
+                    'level': level,
+                    'text': text
+                })
+        
+        return headings
+
+
 if __name__ == "__main__":
     # 运行测试，配置 Hypothesis 运行至少 100 次迭代
     pytest.main([

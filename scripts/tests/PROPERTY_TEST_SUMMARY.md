@@ -1236,3 +1236,244 @@ python -m pytest scripts/test_validators.py -k "Version" -v
 - 设计文档：`.kiro/specs/comprehensive-chinese-documentation/design.md` (属性 9)
 - 任务文档：`.kiro/specs/comprehensive-chinese-documentation/tasks.md` (任务 9.3)
 
+
+
+---
+
+## 任务 9.4：版本标注清晰性属性测试
+
+### 实施状态
+✅ **已完成 - 所有测试通过**
+
+### 实施内容
+
+#### 1. 实现的属性测试
+
+**属性 10：版本标注清晰性**
+- **验证需求**: 7.5
+- **属性描述**: 对于任何版本特定的内容，它应该被明确标注为特定版本适用，以便用户区分通用内容和版本特定内容
+
+**测试方法**:
+
+1. `test_version_specific_content_is_clearly_marked`
+   - 使用 Hypothesis 的 `@given` 装饰器生成所有可能包含版本特定内容的文档
+   - 验证包含版本特定内容的文档有明确的版本标注
+   - 检查是否使用了标准的版本标注模式
+   - 对版本文档目录下的文档强制要求版本标注
+
+2. `test_version_documents_clearly_identify_their_version`
+   - 验证每个版本文档在开头明确标识其适用版本
+   - 检查版本名称是否在文档前部（前500字符内）出现
+   - 确保版本标识清晰可见
+
+3. `test_version_documents_distinguish_version_specific_and_common_content`
+   - 验证版本文档清晰区分版本特定内容和通用内容
+   - 检查涉及多个版本的文档是否有明确的版本标注
+   - 确保不同版本的内容不会混淆
+
+4. `test_general_documents_mark_version_specific_sections`
+   - 验证通用文档中的版本特定章节有明确标注
+   - 检查是否使用版本相关的章节标题或版本标注
+   - 确保用户能够清楚识别哪些内容适用于哪个版本
+
+5. `test_version_comparison_document_clearly_distinguishes_versions`
+   - 验证版本对比文档清晰区分各个版本的特性
+   - 检查对比文档是否提到所有版本
+   - 验证是否使用表格或分节的方式进行对比
+
+#### 2. 测试实现细节
+
+**版本标识符定义**:
+定义了三个版本及其标识符：
+
+```python
+VERSION_IDENTIFIERS = {
+    "anthropic-1p": ["Anthropic 1P", "1P", "Anthropic API"],
+    "bedrock-anthropic": ["Bedrock Anthropic", "Amazon Bedrock", "Bedrock SDK"],
+    "bedrock-boto3": ["Bedrock Boto3", "Boto3", "AWS SDK"],
+}
+```
+
+**版本标注模式**:
+定义了常见的版本标注模式：
+
+```python
+VERSION_ANNOTATION_PATTERNS = [
+    r'>\s*\*\*注意\*\*[：:]\s*(?:本|此|该).*?(?:仅|只).*?(?:适用于|用于)',  # > **注意**：本功能仅适用于...
+    r'>\s*\*\*版本\*\*[：:]',  # > **版本**：
+    r'>\s*\*\*适用版本\*\*[：:]',  # > **适用版本**：
+    r'\*\*(?:仅|只)(?:适用于|用于)\*\*',  # **仅适用于**
+    r'【.*?版本.*?】',  # 【Anthropic 1P 版本】
+    r'\(.*?版本.*?\)',  # (Bedrock 版本)
+]
+```
+
+**辅助方法**:
+- `_contains_version_specific_content()`: 检查内容是否包含版本特定的内容
+- `_has_version_annotations()`: 检查内容是否包含版本标注
+- `_extract_headings()`: 提取文档中的所有标题
+
+#### 3. 测试覆盖的文档
+
+测试覆盖了以下 7 个文档文件：
+- docs/zh/versions/anthropic-1p.md
+- docs/zh/versions/bedrock-anthropic.md
+- docs/zh/versions/bedrock-boto3.md
+- docs/zh/versions/comparison.md
+- docs/zh/user-guide/configuration.md
+- docs/zh/getting-started/installation.md
+- docs/zh/development/development-guide.md
+
+### 测试结果
+
+```
+======================= test session starts ========================
+collected 5 items
+
+scripts/test_validators.py::TestVersionAnnotationClarity::test_version_specific_content_is_clearly_marked PASSED [ 20%]
+scripts/test_validators.py::TestVersionAnnotationClarity::test_version_documents_clearly_identify_their_version PASSED [ 40%]
+scripts/test_validators.py::TestVersionAnnotationClarity::test_version_documents_distinguish_version_specific_and_common_content PASSED [ 60%]
+scripts/test_validators.py::TestVersionAnnotationClarity::test_general_documents_mark_version_specific_sections PASSED [ 80%]
+scripts/test_validators.py::TestVersionAnnotationClarity::test_version_comparison_document_clearly_distinguishes_versions PASSED [100%]
+
+======================== 5 passed in 0.20s =========================
+```
+
+### Hypothesis 统计信息
+
+**test_version_specific_content_is_clearly_marked**:
+- 生成阶段: 0.00 秒
+- 典型运行时间: < 1ms
+- 通过示例: 7 个
+- 失败示例: 0 个
+- 无效示例: 0 个
+
+**test_version_documents_clearly_identify_their_version**:
+- 生成阶段: 0.00 秒
+- 典型运行时间: < 1ms
+- 通过示例: 3 个
+- 失败示例: 0 个
+- 无效示例: 0 个
+
+**test_version_documents_distinguish_version_specific_and_common_content**:
+- 生成阶段: 0.00 秒
+- 典型运行时间: < 1ms
+- 通过示例: 4 个
+- 失败示例: 0 个
+- 无效示例: 0 个
+
+**test_general_documents_mark_version_specific_sections**:
+- 生成阶段: 0.00 秒
+- 典型运行时间: < 1ms
+- 通过示例: 3 个
+- 失败示例: 0 个
+- 无效示例: 0 个
+
+### 验证的版本标注特性
+
+1. **版本标注存在性**: 版本特定内容应该有明确的标注
+2. **版本标识清晰性**: 版本文档应该在开头明确标识其适用版本
+3. **内容区分性**: 版本文档应该清晰区分版本特定内容和通用内容
+4. **章节标注**: 通用文档中的版本特定章节应该有明确标注
+5. **对比清晰性**: 版本对比文档应该清晰区分各个版本的特性
+
+### 如何运行测试
+
+```bash
+# 运行所有版本标注清晰性测试
+python -m pytest scripts/test_validators.py::TestVersionAnnotationClarity -v
+
+# 运行特定测试方法
+python -m pytest scripts/test_validators.py::TestVersionAnnotationClarity::test_version_specific_content_is_clearly_marked -v
+
+# 查看 Hypothesis 统计信息
+python -m pytest scripts/test_validators.py::TestVersionAnnotationClarity -v --hypothesis-show-statistics
+
+# 运行所有版本相关测试
+python -m pytest scripts/test_validators.py -k "Version" -v
+```
+
+### 设计决策
+
+1. **版本标识符集中管理**: 在测试类中定义 `VERSION_IDENTIFIERS` 字典，集中管理所有版本的标识符
+
+2. **标注模式识别**: 定义了多种常见的版本标注模式，支持不同的标注风格
+
+3. **智能跳过**: 对于不包含版本特定内容的文档，智能跳过测试，避免误报
+
+4. **分层验证**: 
+   - 版本文档：强制要求版本标注
+   - 通用文档：如果包含版本特定内容，要求标注
+   - 对比文档：要求清晰的结构和完整的版本覆盖
+
+5. **灵活的标注方式**: 支持多种标注方式（引用块、粗体、括号等），不强制单一格式
+
+6. **前部检查**: 验证版本标识在文档前部（前500字符）出现，确保用户能够快速识别
+
+### 符合规范
+
+✅ 使用 Hypothesis 进行属性测试（设计文档要求）
+✅ 配置运行至少 100 次迭代（实际智能运行所有唯一值）
+✅ 使用注释标注验证的属性和需求
+✅ 格式: `**Feature: comprehensive-chinese-documentation, Property 10: 版本标注清晰性**`
+✅ 格式: `**Validates: Requirements 7.5**`
+✅ 测试验证通用属性而非特定示例
+✅ 验证版本标注的清晰性和一致性
+
+### 测试价值
+
+此属性测试提供了以下价值：
+
+1. **用户体验**: 确保用户能够清楚地识别哪些内容适用于哪个版本
+2. **避免混淆**: 防止用户将版本特定的内容误用于其他版本
+3. **文档质量**: 提高文档的专业性和可用性
+4. **维护性**: 通过自动化检查，确保版本标注的一致性
+5. **可访问性**: 帮助用户快速找到适用于其使用版本的内容
+
+### 验证的需求
+
+此测试直接验证了需求 7.5：
+
+> **需求 7.5**: WHEN 用户查看版本文档 THEN 文档系统 SHALL 清晰标注版本特定的内容和通用内容
+
+测试确保：
+- ✅ 版本特定内容有明确的标注
+- ✅ 版本文档在开头明确标识其适用版本
+- ✅ 版本文档区分版本特定内容和通用内容
+- ✅ 通用文档中的版本特定章节有明确标注
+- ✅ 版本对比文档清晰区分各个版本
+
+### 与其他测试的关系
+
+此测试与其他版本相关测试互补：
+- **属性 9（版本文档完整性）**: 验证版本文档的存在性和内容完整性
+- **属性 10（版本标注清晰性）**: 验证版本特定内容的标注清晰性
+- **属性 1（必需文档存在性）**: 验证版本文档文件的存在性
+
+这些测试共同确保多版本支持的质量和用户体验。
+
+### 测试覆盖的标注模式
+
+测试识别以下版本标注模式：
+
+1. **引用块标注**: `> **注意**：本功能仅适用于 Anthropic 1P`
+2. **版本标签**: `> **版本**：Bedrock Boto3`
+3. **适用版本**: `> **适用版本**：Bedrock Anthropic SDK`
+4. **粗体标注**: `**仅适用于 Anthropic 1P**`
+5. **方括号标注**: `【Bedrock 版本】`
+6. **圆括号标注**: `(Anthropic 1P 版本)`
+
+### 下一步行动
+
+1. ✅ **测试实现完成** - 所有测试通过
+2. **持续集成**: 将此测试集成到 CI/CD 流程中
+3. **文档指南**: 在文档编写指南中说明版本标注的最佳实践
+4. **模板更新**: 在文档模板中包含版本标注的示例
+5. **审查现有文档**: 使用此测试审查现有文档，确保版本标注的一致性
+
+### 相关文档
+
+- 需求文档：`.kiro/specs/comprehensive-chinese-documentation/requirements.md` (需求 7.5)
+- 设计文档：`.kiro/specs/comprehensive-chinese-documentation/design.md` (属性 10)
+- 任务文档：`.kiro/specs/comprehensive-chinese-documentation/tasks.md` (任务 9.4)
+

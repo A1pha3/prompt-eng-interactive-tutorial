@@ -1,2 +1,4 @@
 .DS_Store
 
+# Hypothesis testing cache
+.hypothesis/

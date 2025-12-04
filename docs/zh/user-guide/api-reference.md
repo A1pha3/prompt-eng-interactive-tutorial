@@ -421,7 +421,7 @@ for chunk in get_completion_streaming("写一首关于春天的诗"):
 - 代码：取决于语言和格式
 
 **示例**：
-```python
+```text
 # 英文
 "Hello, world!" ≈ 4 tokens
 

@@ -133,6 +133,338 @@ class TestDocumentExistence:
             )
 
 
+class TestDocumentContentCompleteness:
+    """
+    属性测试：文档内容完整性
+    
+    **Feature: comprehensive-chinese-documentation, Property 2: 文档内容完整性**
+    **Validates: Requirements 1.1, 2.1, 2.2, 2.3, 5.4**
+    
+    属性：对于任何文档文件，它应该包含其类型所要求的所有必需章节和内容元素
+    （如项目目标、安装步骤、API 说明等）。
+    """
+    
+    @given(category=st.sampled_from([
+        "getting-started",
+        "user-guide",
+        "development",
+        "advanced",
+        "versions"
+    ]))
+    @settings(max_examples=100)
+    def test_documents_contain_required_sections(self, category):
+        """
+        属性测试：对于任何文档类别，该类别下的文档应该包含必需的章节
+        
+        这个测试验证了文档包含了其类型所要求的所有必需章节，
+        确保文档内容的完整性。
+        """
+        from validators.content import DocumentContentChecker
+        
+        # 获取该类别的必需章节定义
+        if category not in DocumentContentChecker.REQUIRED_SECTIONS:
+            pytest.skip(f"类别 {category} 没有定义必需章节")
+        
+        category_docs = DocumentContentChecker.REQUIRED_SECTIONS[category]
+        
+        for doc_name, required_sections in category_docs.items():
+            doc_path = ROOT_DIR / "docs" / "zh" / category / doc_name
+            
+            # 如果文档不存在，跳过（存在性测试会处理）
+            if not doc_path.exists():
+                continue
+            
+            try:
+                content = doc_path.read_text(encoding='utf-8')
+                
+                # 提取所有标题
+                headings = self._extract_headings(content)
+                headings_text = [h['text'] for h in headings]
+                headings_lower = [h.lower() for h in headings_text]
+                
+                # 属性：文档应该包含所有必需章节
+                # 注意：某些章节可能有同义词（如"概述"可以是"欢迎"、"简介"等）
+                for section in required_sections:
+                    # 定义章节的同义词
+                    synonyms = {
+                        '概述': ['概述', '简介', '介绍', '欢迎', 'overview', 'introduction'],
+                        '贡献': ['贡献', '参与', '如何贡献', 'contributing'],
+                    }
+                    
+                    # 获取该章节的所有可能名称
+                    possible_names = synonyms.get(section, [section])
+                    
+                    # 检查是否存在任何一个可能的名称
+                    found = any(
+                        any(name.lower() in heading for name in possible_names)
+                        for heading in headings_lower
+                    )
+                    
+                    assert found, (
+                        f"文档 {doc_path.relative_to(ROOT_DIR)} "
+                        f"缺少必需章节: {section} (或其同义词: {possible_names})\n"
+                        f"现有章节: {headings_text[:10]}"
+                    )
+            except Exception as e:
+                pytest.fail(f"读取文档失败 {doc_path}: {e}")
+    
+    @given(doc_path=st.sampled_from([
+        "docs/zh/getting-started/installation.md",
+        "docs/zh/getting-started/quickstart.md",
+        "docs/zh/user-guide/user-guide.md",
+        "docs/zh/user-guide/api-reference.md",
+        "docs/zh/user-guide/configuration.md",
+        "docs/zh/user-guide/examples.md",
+        "docs/zh/development/architecture.md",
+        "docs/zh/development/development-guide.md",
+        "docs/zh/development/contributing.md",
+        "docs/zh/development/code-style.md",
+        "docs/zh/advanced/design-principles.md",
+        "docs/zh/advanced/performance.md",
+        "docs/zh/advanced/troubleshooting.md",
+        "docs/zh/advanced/faq.md",
+        "docs/zh/versions/comparison.md",
+        "docs/zh/versions/anthropic-1p.md",
+        "docs/zh/versions/bedrock-anthropic.md",
+        "docs/zh/versions/bedrock-boto3.md",
+    ]))
+    @settings(max_examples=100)
+    def test_documents_have_main_title(self, doc_path):
+        """
+        属性测试：对于任何文档，应该有主标题（H1）
+        
+        验证：
+        - 文档应该以 H1 标题开始
+        - H1 标题应该在文档的开头部分
+        - 文档应该只有一个 H1 标题
+        """
+        full_path = ROOT_DIR / doc_path
+        
+        if not full_path.exists():
+            pytest.skip(f"文档不存在: {doc_path}")
+        
+        content = full_path.read_text(encoding='utf-8')
+        
+        # 属性：文档不应该为空
+        assert len(content.strip()) > 0, (
+            f"文档 {doc_path} 为空"
+        )
+        
+        lines = content.strip().split('\n')
+        
+        # 查找第一个非空行
+        first_content_line = None
+        for line in lines:
+            if line.strip():
+                first_content_line = line
+                break
+        
+        # 属性：文档应该以标题开始（通常是 H1）
+        assert first_content_line is not None, (
+            f"文档 {doc_path} 没有内容"
+        )
+        
+        # 提取所有标题
+        headings = self._extract_headings(content)
+        
+        assert len(headings) > 0, (
+            f"文档 {doc_path} 没有标题"
+        )
+        
+        # 属性：第一个标题应该是 H1
+        first_heading = headings[0]
+        assert first_heading['level'] == 1, (
+            f"文档 {doc_path} 的第一个标题不是 H1，而是 H{first_heading['level']}: "
+            f"{first_heading['text']}"
+        )
+        
+        # 属性：文档应该只有一个 H1 标题
+        h1_count = sum(1 for h in headings if h['level'] == 1)
+        assert h1_count == 1, (
+            f"文档 {doc_path} 有 {h1_count} 个 H1 标题，应该只有一个"
+        )
+    
+    @given(doc_path=st.sampled_from([
+        "docs/zh/getting-started/installation.md",
+        "docs/zh/getting-started/quickstart.md",
+        "docs/zh/user-guide/user-guide.md",
+        "docs/zh/user-guide/api-reference.md",
+        "docs/zh/user-guide/configuration.md",
+        "docs/zh/user-guide/examples.md",
+        "docs/zh/development/architecture.md",
+        "docs/zh/development/development-guide.md",
+        "docs/zh/development/contributing.md",
+        "docs/zh/development/code-style.md",
+        "docs/zh/advanced/design-principles.md",
+        "docs/zh/advanced/performance.md",
+        "docs/zh/advanced/troubleshooting.md",
+        "docs/zh/advanced/faq.md",
+        "docs/zh/versions/comparison.md",
+        "docs/zh/versions/anthropic-1p.md",
+        "docs/zh/versions/bedrock-anthropic.md",
+        "docs/zh/versions/bedrock-boto3.md",
+    ]))
+    @settings(max_examples=100)
+    def test_documents_have_sufficient_content(self, doc_path):
+        """
+        属性测试：对于任何文档，应该有足够的内容
+        
+        验证：
+        - 文档长度应该超过最小阈值（100字符）
+        - 文档应该包含实质性内容，不只是标题
+        - 文档应该有多个段落或章节
+        """
+        full_path = ROOT_DIR / doc_path
+        
+        if not full_path.exists():
+            pytest.skip(f"文档不存在: {doc_path}")
+        
+        content = full_path.read_text(encoding='utf-8')
+        
+        # 属性：文档应该有足够的内容（至少100字符）
+        assert len(content) >= 100, (
+            f"文档 {doc_path} 内容过短 ({len(content)} 字符)，"
+            f"应该至少有 100 字符"
+        )
+        
+        # 提取标题
+        headings = self._extract_headings(content)
+        
+        # 属性：文档应该有多个章节（至少2个标题，包括主标题）
+        assert len(headings) >= 2, (
+            f"文档 {doc_path} 只有 {len(headings)} 个标题，"
+            f"应该至少有 2 个（主标题 + 至少一个章节）"
+        )
+        
+        # 计算非标题内容的长度
+        # 移除所有标题行
+        lines = content.split('\n')
+        non_heading_lines = []
+        in_code_block = False
+        
+        for line in lines:
+            if line.strip().startswith('```'):
+                in_code_block = not in_code_block
+                continue
+            
+            if not in_code_block and not line.strip().startswith('#'):
+                non_heading_lines.append(line)
+        
+        non_heading_content = '\n'.join(non_heading_lines).strip()
+        
+        # 属性：文档应该有实质性的非标题内容
+        assert len(non_heading_content) >= 50, (
+            f"文档 {doc_path} 的实质性内容过少 ({len(non_heading_content)} 字符)，"
+            f"文档不应该只包含标题"
+        )
+    
+    @given(doc_path=st.sampled_from([
+        "docs/zh/getting-started/installation.md",
+        "docs/zh/getting-started/quickstart.md",
+        "docs/zh/user-guide/user-guide.md",
+        "docs/zh/user-guide/api-reference.md",
+        "docs/zh/user-guide/configuration.md",
+        "docs/zh/user-guide/examples.md",
+    ]))
+    @settings(max_examples=100)
+    def test_user_facing_documents_have_overview_section(self, doc_path):
+        """
+        属性测试：对于任何面向用户的文档，应该有概述章节
+        
+        验证：
+        - 入门文档和使用文档应该有"概述"章节
+        - 概述章节应该在文档的前面部分
+        - 概述章节应该包含实质性内容
+        """
+        full_path = ROOT_DIR / doc_path
+        
+        if not full_path.exists():
+            pytest.skip(f"文档不存在: {doc_path}")
+        
+        content = full_path.read_text(encoding='utf-8')
+        headings = self._extract_headings(content)
+        
+        # 属性：文档应该有"概述"章节
+        overview_headings = [
+            h for h in headings
+            if '概述' in h['text'] or 'overview' in h['text'].lower()
+        ]
+        
+        assert len(overview_headings) > 0, (
+            f"文档 {doc_path} 缺少概述章节\n"
+            f"现有章节: {[h['text'] for h in headings[:10]]}"
+        )
+        
+        # 属性：概述章节应该在文档前面（前5个标题内）
+        overview_index = next(
+            i for i, h in enumerate(headings)
+            if '概述' in h['text'] or 'overview' in h['text'].lower()
+        )
+        
+        assert overview_index <= 4, (
+            f"文档 {doc_path} 的概述章节位置过晚（第 {overview_index + 1} 个标题），"
+            f"概述应该在文档开头"
+        )
+    
+    def _extract_headings(self, content: str) -> list:
+        """提取文档中的所有标题"""
+        headings = []
+        lines = content.split('\n')
+        code_block_depth = 0  # 跟踪嵌套的代码块深度
+        
+        for line in lines:
+            # 跟踪代码块 - 支持嵌套代码块（如 ````markdown）
+            stripped = line.strip()
+            if '```' in stripped:
+                # 计算反引号的数量
+                backtick_count = len(stripped) - len(stripped.lstrip('`'))
+                if backtick_count >= 3:
+                    # 如果是代码块的开始或结束
+                    if code_block_depth == 0:
+                        code_block_depth = backtick_count
+                    elif backtick_count >= code_block_depth:
+                        code_block_depth = 0
+                    continue
+            
+            # 跳过代码块内的内容
+            if code_block_depth > 0:
+                continue
+            
+            # 匹配标题 - 必须从行首开始（不能有前导空格）
+            # 这样可以避免匹配代码块中的注释
+            if line.startswith('#'):
+                match = re.match(r'^(#+)\s+(.+)$', line)
+                if match:
+                    level = len(match.group(1))
+                    text = match.group(2).strip()
+                    headings.append({
+                        'level': level,
+                        'text': text
+                    })
+        
+        return headings
+    
+    def test_content_checker_integration(self):
+        """
+        集成测试：文档内容检查器应该正确检测所有内容问题
+        
+        这个测试运行完整的内容检查器并验证它能够检测到内容完整性问题。
+        """
+        from validators.content import DocumentContentChecker
+        
+        checker = DocumentContentChecker(str(ROOT_DIR))
+        
+        # 运行检查器
+        success = checker.check()
+        
+        # 验证器应该能够运行而不崩溃
+        # 如果有错误，它们应该被正确记录
+        if not success:
+            assert len(checker.errors) > 0 or len(checker.warnings) > 0, (
+                "内容检查失败但没有记录错误或警告"
+            )
+
+
 class TestCodeExampleSynchronization:
     """
     属性测试：代码示例同步性
@@ -1125,15 +1457,21 @@ class TestDocumentStructureConsistency:
         headings = []
         lines = content.split('\n')
         in_code_block = False
+        in_markdown_code_block = False
         
         for line in lines:
-            # 跟踪代码块
-            if line.strip().startswith('```'):
-                in_code_block = not in_code_block
+            # 跟踪代码块（包括 markdown 代码块）
+            stripped = line.strip()
+            if stripped.startswith('```'):
+                # 检查是否是 markdown 代码块
+                if stripped.startswith('```markdown') or stripped.startswith('```md'):
+                    in_markdown_code_block = not in_markdown_code_block
+                else:
+                    in_code_block = not in_code_block
                 continue
             
             # 跳过代码块内的内容
-            if in_code_block:
+            if in_code_block or in_markdown_code_block:
                 continue
             
             # 匹配标题
@@ -2148,15 +2486,21 @@ class TestVersionDocumentationCompleteness:
         headings = []
         lines = content.split('\n')
         in_code_block = False
+        in_markdown_code_block = False
         
         for line in lines:
-            # 跟踪代码块
-            if line.strip().startswith('```'):
-                in_code_block = not in_code_block
+            # 跟踪代码块（包括 markdown 代码块）
+            stripped = line.strip()
+            if stripped.startswith('```'):
+                # 检查是否是 markdown 代码块
+                if stripped.startswith('```markdown') or stripped.startswith('```md'):
+                    in_markdown_code_block = not in_markdown_code_block
+                else:
+                    in_code_block = not in_code_block
                 continue
             
             # 跳过代码块内的内容
-            if in_code_block:
+            if in_code_block or in_markdown_code_block:
                 continue
             
             # 匹配标题

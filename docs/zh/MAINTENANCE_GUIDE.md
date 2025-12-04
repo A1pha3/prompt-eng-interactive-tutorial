@@ -627,9 +627,9 @@ print(message.content)
 
 ```markdown
 有关更多详细信息，请参阅：
-- [安装指南](../getting-started/installation.md)
-- [配置说明](./configuration.md)
-- [API 参考](./api-reference.md)
+- [安装指南](./getting-started/installation.md)
+- [配置说明](./user-guide/configuration.md)
+- [API 参考](./user-guide/api-reference.md)
 ```
 
 #### 5. 保持文档简洁
@@ -854,7 +854,7 @@ tree docs/zh/
 
 - **文档团队**: [创建 Issue](https://github.com/your-repo/issues/new?labels=documentation)
 - **技术支持**: [技术支持邮箱]
-- **贡献指南**: [CONTRIBUTING.md](../development/contributing.md)
+- **贡献指南**: [CONTRIBUTING.md](./development/contributing.md)
 
 ---
 
